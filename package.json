@@ -1,0 +1,58 @@
+{
+    "name": "nogo",
+    "description": "A nodejs, mongodb and pm2 based rest api with token authorization",
+    "author": "Bengt Weiße <bengtler@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/KillerCodeMonkey/nogo"
+    },
+    "keywords": [
+        "nodejs",
+        "cron",
+        "email",
+        "pm2",
+        "rest",
+        "api",
+        "mongodb",
+        "bearer",
+        "token authentication",
+        "jwt",
+        "jsonwebtoken"
+    ],
+    "scripts": {
+        "preinstall": ["npm install -g jsdoc", "npm install -g grunt-cli", "npm install -g pm2@0.14.5"]
+    },
+    "dependencies": {
+        "mongodb": "2.0.39",
+        "requirejs": "2.1.19",
+        "express": "4.13.1",
+        "body-parser": "1.13.2",
+        "method-override": "2.3.4",
+        "errorhandler": "1.4.1",
+        "node-promise": "0.5.12",
+        "mongoose": "4.0.8",
+        "grunt": "0.4.5",
+        "grunt-exec": "0.4.6",
+        "grunt-contrib-clean": "0.6.0",
+        "connect-busboy": "0.0.2",
+        "jsonwebtoken": "5.0.4",
+        "mkdirp": "0.5.1",
+        "underscore": "1.8.3",
+        "agenda": "0.6.28",
+        "request": "~2.60.0",
+        "cors": "2.7.1",
+        "nodemailer": "~1.4.0",
+        "nodemailer-smtp-transport": "~1.0.3",
+        "email-templates": "~2.0.1",
+        "handlebars": "~3.0.3"
+    },
+    "licence": "MIT",
+    "devDependencies": {
+        "expect.js": "0.3.1",
+        "supertest": "1.0.1",
+        "grunt-mocha-test": "0.12.7"
+    },
+    "engines": {
+        "node":  ">= 0.10.33"
+    }
+}
