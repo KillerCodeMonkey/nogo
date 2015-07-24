@@ -115,7 +115,7 @@ module.exports = function (grunt) {
             },
 
             monitorAPIPM2: {
-                command: 'pm2 monit stylecheck'
+                command: 'pm2 monit api'
             },
 
             monitorAllPM2: {
