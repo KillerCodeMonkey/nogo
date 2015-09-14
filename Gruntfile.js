@@ -18,6 +18,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-apidoc');
 
     grunt.initConfig({
         mochaTest: {
@@ -27,6 +28,18 @@ module.exports = function (grunt) {
                     reporter: reporter || 'spec'
                 },
                 src: ['tests/*/*.js']
+            }
+        },
+
+        apidoc: {
+            myapp: {
+                src: 'endpoints/',
+                dest: 'apiDoc/'
+            },
+            options: {
+                debug: true,
+                includeFilters: [ '.*\\.js$' ],
+                excludeFilters: [ 'node_modules/', 'docs/', 'tests/', 'util/', 'templates/', 'cron.js', 'index.js', 'models/', 'apiDoc/', 'middleware/', 'config/' ]
             }
         },
 

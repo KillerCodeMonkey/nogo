@@ -95,24 +95,81 @@ define([
         return $q;
     }
 
-    /**
-     * @function login
-     * @description Login for user
-     * @property /api/[version]/authentication/login url
-     * @property {POST} Method - request method
-     * @param {string} password - User password
-     * @param {string} login - email|username address
-     * @param {string} token - apn token or google registrationId (optional)
-     * @param {string} uuid - device uuid (optional)
-     * @param {string} platform - ios | android
-     * @return {object} authorized user object - user + tokens
-     * @throws 400 'missing_parameter_login' - if email|username is missing
-     * @throws 400 'missing_parameter_password' - if password is missing
-     * @throws 400 'missing_parameter_platform' - if platform is missing
-     * @throws 400 'already_logged_in' - if you send valid authorization header you are already logged in
-     * @throws 400 'user_not_exists' - user does not exist in database
-     * @throws 400 'invalid_login_password_combination' - email/password combination is invalid
-     * @throws 400 'wrong_param_type_for_PARAMETER' - PARAMETER=login|password|platform|token|uuid is no string
+     /**
+     * @api {post} /authentication/login Login
+     * @apiName Login
+     * @apiDescription user login
+     * @apiGroup Authentication
+     * @apiVersion 1.0.0
+     * @apiPermission unauthorized
+     * @apiParam {String} [email] email address to send new pw
+     * @apiParam {String} [password] account password to set new email, password
+     * @apiParam {String} [platform] logged in from ios|android|web
+     * @apiParamExample {json} request body
+                   { "login": "bengtler@gmail.com",
+                     "password": "123456",
+                     "platform": "web" }
+     * @apiSuccess {Object} authentication the authentication with tokens and user.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "refreshToken": "refreshtoken",
+     *       "accessToken": "token",
+     *       "_id": "507f191e810c19729de860ea",
+     *       "user": { ... } // user object
+     *     }
+     *
+     * @apiError (Error 500) InternalServerError An error while processing mongoDB query occurs.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "error": "MONGODB ERROR OBJECT"
+     *     }
+     *
+     * @apiError (Error 400) MissingParameter a parameter is missing
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "missing_parameter"
+     *     }
+     * @apiError (Error 400) InvalidStructure structure of a parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_structure",
+     *       "param": "email"
+     *     }
+     * @apiError (Error 400) WrongDatatype type of parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "wrong_type",
+     *       "param": "email"
+     *     }
+     *
+     * @apiError (Error 400) InvalidPassword old password is wrong
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_password"
+     *     }
+     * @apiError (Error 400) InvalidLogin username/email and password combination is wrong
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_login_password_combination"
+     *     }
+     * @apiError (Error 400) AlreadyLoggedIn authorization header is set with valid user
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "already_logged_in"
+     *     }
      */
     rest.login = {
         permissions: [],
@@ -193,21 +250,6 @@ define([
         }
     };
 
-    /**
-     * @function token
-     * @description updates token for a authentication
-     * @property /api/[version]/[database]/authentication/token url
-     * @property {PUT} Method - request method
-     * @property Authorization - set request header Authorization: TOKENTYPE ACCESSTOKEN
-     * @property Permissions - User
-     * @param {string} uuid - device uuid
-     * @param {string} platform - platform
-     * @param {string} token - new token
-     * @throws 400 'missing_parameter_token' - if token is missing
-     * @throws 400 'missing_parameter_platform' - if platform is missing
-     * @throws 400 'missing_parameter_uuid' - if uuid is missing
-     * @throws 400 'wrong_param_type_for_PARAMETER' - PARAMETER=token|platform|uuid is no string
-    */
     rest.token = {
         params: {
             'token': {
@@ -256,19 +298,48 @@ define([
     };
 
     /**
-     * @function refresh
-     * @description Refreshs access/refresh token for a user
-     * @property /api/[version]/authentication/refresh url
-     * @property {POST} Method - request method
-     * @param {string} accessToken - access token you've got from login request
-     * @param {string} refreshToken - refresh token you've got from login request
-     * @return {object} authorized user object - user + tokens
-     * @throws 400 'missing_parameter_accessToken' - if access token is missing
-     * @throws 400 'missing_parameter_refreshToken' - if refresh token is missing
-     * @throws 400 'invalid_refresh_token' - refresh token belongs not to the access token
-     * @throws 403 - the access token not exists -> not loggedin
-     * @throws 400 'user_not_found' - found no user to access token in database
-     * @throws 400 'wrong_param_type_for_PARAMETER' - PARAMETER=accessToken|refreshToken is no string
+    * @api {post} /authentication/refresh Refresh
+    * @apiName RefreshLogin
+    * @apiDescription generated new access- and refreshtoken pair
+    * @apiGroup Authentication
+    * @apiVersion 1.0.0
+    * @apiPermission unauthorized
+    * @apiParam {String} accessToken current access token
+    * @apiParam {String} refreshToken the refresh token
+    * @apiParamExample {json} request body
+                  { "accessToken": "adsfasdfdasfdasf",
+                    "refreshToken": "asdfdasfdasf" }
+    * @apiSuccess {Object} authentication the authentication with tokens and user.
+    * @apiHeaderExample {json} Authorization-Header-Example:
+                     { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+    * @apiSuccessExample Success-Response:
+    *     HTTP/1.1 200 OK
+    *     {
+    *       "refreshToken": "refreshtoken",
+    *       "accessToken": "token",
+    *       "_id": "507f191e810c19729de860ea",
+    *       "user": { ... } // user object
+    *     }
+    *
+    * @apiError (Error 500) InternalServerError An error while processing mongoDB query occurs.
+    *
+    * @apiErrorExample Error-Response:
+    *     HTTP/1.1 500 Internal Server Error
+    *     {
+    *       "error": "MONGODB ERROR OBJECT"
+    *     }
+    * @apiError (Error 400) InvalidRefresh refreshtoken is incorrect
+    * @apiErrorExample Error-Response:
+    *     HTTP/1.1 400 Bad Request
+    *     {
+    *       "error": "invalid_refresh_token"
+    *     }
+    * @apiError (Error 400) InvalidUser there is no user for authorization
+    * @apiErrorExample Error-Response:
+    *     HTTP/1.1 400 Bad Request
+    *     {
+    *       "error": "user_not_found"
+    *     }
     */
     rest.refresh = {
         params: {
@@ -333,13 +404,28 @@ define([
         }
     };
 
-    /**
-     * @function logout
-     * @description Logout
-     * @property /api/[version]/authentication/logout - url
-     * @property {GET} Method - request method
-     * @property Authorization - set request header Authorization: TOKENTYPE ACCESSTOKEN
-     * @throws 403 - not logged in -> permission denied
+     /**
+     * @api {get} /authentication/logout Logout
+     * @apiName Logout
+     * @apiDescription removes current authentication --> logout
+     * @apiGroup Authentication
+     * @apiVersion 1.0.0
+     * @apiPermission User, Admin
+     * @apiHeaderExample {json} Authorization-Header-Example:
+                      { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError (Error 500) InternalServerError An error while processing mongoDB query occurs.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "error": "MONGODB ERROR OBJECT"
+     *     }
+     * @apiError (Error 403) UserNotFound there is no user for the accesstoken
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 403 Not Found
      */
     rest.logout = {
         permissions: [appConfig.permissions.user, appConfig.permissions.admin],
