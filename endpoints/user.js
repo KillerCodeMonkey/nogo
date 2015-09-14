@@ -1,14 +1,10 @@
-/* global define, process, console */
-/** @file user.js Endpoints for user request
- *  @module User
- * */
 define([
     'appConfig',
     'node-promise',
     'underscore',
     'util/mailer',
     'util/helper'
-], /** @lends User */ function (appConfig, promise, _, Mailer, helper) {
+], function (appConfig, promise, _, Mailer, helper) {
     'use strict';
     var rest = {},
         fields = [
@@ -85,13 +81,32 @@ define([
     }
 
     /**
-     * @function get
-     * @description Get users
-     * @property /api/[version]/user url
-     * @property {GET} Method - request method
-     * @property Authorization - set request header Authorization: TOKENTYPE ACCESSTOKEN
-     * @return {array.object} user list - user object
-     */
+    * @api {get} /user Get User list
+    * @apiName GetUsers
+    * @apiDescription Gets the list of all users exclude self
+    * @apiGroup User
+    * @apiVersion 1.0.0
+    * @apiPermission everyone
+    * @apiHeader {String} [Authorization] Set TOKENTYPE ACCESSTOKEN for possible authorization
+    * @apiHeaderExample {json} Authorization-Header-Example:
+                     { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+    * @apiSuccess {Object[]} UserList list of user objects.
+    *
+    * @apiSuccessExample Success-Response:
+    *     HTTP/1.1 200 OK
+    *     [{
+    *       "username": "killercodemonkey",
+    *       "_id": "507f191e810c19729de860ea"
+    *     }]
+    *
+    * @apiError (Error 500) InternalServerError An error while processing mongoDB query occurs.
+    *
+    * @apiErrorExample Error-Response:
+    *     HTTP/1.1 500 Internal Server Error
+    *     {
+    *       "error": "MONGODB ERROR OBJECT"
+    *     }
+    */
     rest.get = {
         permissions: [],
         models: ['user'],
@@ -121,14 +136,35 @@ define([
         }
     };
 
-    /**
-     * @function account
-     * @description Gets current logged in user
-     * @property /api/[version]/user/account url
-     * @property {GET} Method - request method
-     * @property Authorization - set request header Authorization: TOKENTYPE ACCESSTOKEN
-     * @property Permissions - User
-     * @return {object} user - user object
+     /**
+     * @api {get} /user/account Get Account
+     * @apiName GetAccount
+     * @apiDescription Gets the current logged in user
+     * @apiGroup User
+     * @apiVersion 1.0.0
+     * @apiPermission authorized User
+     * @apiHeader {String} Authorization Set TOKENTYPE ACCESSTOKEN for possible authorization
+     * @apiHeaderExample {json} Authorization-Header-Example:
+                      { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+     * @apiSuccess {String} firstName firstname of the User.
+     * @apiSuccess {String} lastName lastname of the User.
+     * @apiSuccess {String} username username of the User.
+     * @apiSuccess {String} normalizedUsername username in lowercase.
+     * @apiSuccess {String} email email address of the User.
+     * @apiSuccess {String} creationDate registration date of the User.
+     * @apiSuccess {String[]} permissions the permissions/roles of the user.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "username": "killercodemonkey",
+     *       "_id": "507f191e810c19729de860ea",
+     *       "email": "bengtler@gmail.com",
+     *       "permissions": [
+     *          'user',
+     *          'admin'
+     *       ]
+     *     }
      */
     rest.account = {
         permissions: [appConfig.permissions.user],
@@ -138,13 +174,35 @@ define([
         }
     };
 
-    /**
-     * @function getOne
-     * @description Get user
-     * @property /api/[version]/user/id/[userid] url
-     * @property {GET} Method - request method
-     * @property Authorization - set request header Authorization: TOKENTYPE ACCESSTOKEN
-     * @return {object} user - user object
+     /**
+     * @api {get} /user/:id Get User
+     * @apiName GetUser
+     * @apiDescription Gets a user (no admins!)
+     * @apiGroup User
+     * @apiVersion 1.0.0
+     * @apiPermission everyone
+     * @apiParam {String} id objectid of the user
+     * @apiHeader {String} [Authorization] Set TOKENTYPE ACCESSTOKEN for possible authorization
+     * @apiHeaderExample {json} Authorization-Header-Example:
+                      { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+     * @apiSuccess {String} username username of the User.
+     * @apiSuccess {String} email email address of the User.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "username": "killercodemonkey",
+     *       "_id": "507f191e810c19729de860ea",
+     *       "email": "bengtler@gmail.com"
+     *     }
+     *
+     * @apiError (Error 403) Forbidden Trying to get admin user.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 403 Forbidden
+     *     {
+     *       "error": "permission_denied"
+     *     }
      */
     rest.getOne = {
         object: true,
@@ -166,13 +224,28 @@ define([
         }
     };
 
-    /**
-     * @function remove
-     * @description removes user
-     * @property /api/[version]/user/id/[userid] url
-     * @property {DELETE} Method - request method
-     * @property Authorization - set request header Authorization: TOKENTYPE ACCESSTOKEN
-     * @property Permissions - Admin
+     /**
+     * @api {delete} /user/:id Remove user
+     * @apiName RemoveUser
+     * @apiDescription removes a user as admin
+     * @apiGroup User
+     * @apiVersion 1.0.0
+     * @apiPermission admin
+     * @apiParam {String} id objectid of the user
+     * @apiHeader {String} Authorization Set TOKENTYPE ACCESSTOKEN for possible authorization
+     * @apiHeaderExample {json} Authorization-Header-Example:
+                      { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError (Error 500) InternalServerError An error while processing mongoDB query occurs.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "error": "MONGODB ERROR OBJECT"
+     *     }
      */
     rest.remove = {
         object: true,
@@ -202,18 +275,62 @@ define([
         }
     };
 
-    /**
-     * @function check
-     * @description Check if email and/or username already exists
-     * @property /api/[version]/user/check?username=[username] url
-     * @property /api/[version]/user/check?email=[email] url
-     * @property {GET} Method - request method
-     * @param {string} email - the email address  (on is required)
-     * @param {string} username - the username (on is required)
-     * @return {object} exists - true or false
-     * @throws 400 'missing_parameter' - PARAMETER=email if email and username is empty
-     * @throws 400 'invalid_structure' - PARAMETER=email if email address doesn't match the regex
-     * @throws 400 'wrong_type' - PARAMETER=email|username is no string
+     /**
+     * @api {get} /user/check Check User
+     * @apiName CheckUser
+     * @apiDescription checks if a user with email or username exists
+     * @apiGroup User
+     * @apiVersion 1.0.0
+     * @apiPermission everyone
+     * @apiParam {String} email email address to check
+     * @apiParamExample {string} [email]
+                   ?email=bengtler@gmail.com
+     * @apiParam {String} username user name to check
+     * @apiParamExample {string} [username]
+                   ?username=killercodemonkey
+     * @apiHeader {String} [Authorization] Set TOKENTYPE ACCESSTOKEN for possible authorization
+     * @apiHeaderExample {json} Authorization-Header-Example:
+                      { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+     *
+     * @apiSuccess {Boolean} exists if username or email exists
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "exists": true
+     *     }
+     *
+     * @apiError (Error 500) InternalServerError An error while processing mongoDB query occurs.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "error": "MONGODB ERROR OBJECT"
+     *     }
+     *
+     * @apiError (Error 400) MissingParameter a required parameter is missing
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "missing_parameter"
+     *     }
+     * @apiError (Error 400) InvalidStructure parameter value is invalid.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_structure",
+     *       "param": "email"
+     *     }
+     * @apiError (Error 400) WrongDatatype paramete has wrong type
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "wrong_type",
+     *       "param": "email"
+     *     }
      */
     rest.check = {
         permissions: [],
@@ -257,18 +374,70 @@ define([
         }
     };
 
-    /**
-     * @function sendPassword
-     * @description send password for email
-     * @property /api/[version]/user/sendPassword url
-     * @property {PUT} Method - request method
-     * @param {string} email - the email address
-     * @return {object} exists - true or false
-     * @throws 400 'missing_parameter' - Parameter=email if email is empty
-     * @throws 400 'invalid_structure' - Parameter=email if email is not valid
-     * @throws 400 'user_already_loggedin' - sent with  auth header
-     * @throws 400 'wrong_type' - PARAMETER=email is no string
-     * @throws 404 'user_not_found' - if user not exists
+     /**
+     * @api {put} /user/sendPassword Send new password
+     * @apiName SendPassword
+     * @apiDescription sends password for email
+     * @apiGroup User
+     * @apiVersion 1.0.0
+     * @apiPermission unauthorized
+     * @apiParam {String} email email address to send new pw
+     * @apiParamExample {json} request body
+                   { "email": "bengtler@gmail.com" }
+     * @apiSuccess {Object} user the user object.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "username": "killercodemonkey",
+     *       "_id": "507f191e810c19729de860ea",
+     *       "email": "bengtler@gmail.com"
+     *     }
+     *
+     * @apiError (Error 5xx) InternalServerError An error while processing mongoDB query occurs.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "error": "MONGODB ERROR OBJECT"
+     *     }
+     *
+     * @apiError (Error 400) MissingParameter a parameter is missing
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "missing_parameter"
+     *     }
+     * @apiError (Error 400) InvalidStructure structure of a parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_structure",
+     *       "param": "email"
+     *     }
+     * @apiError (Error 400) WrongDatatype type of parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "wrong_type",
+     *       "param": "email"
+     *     }
+     *
+     * @apiError (Error 400) AlreadyLoggedIn valid authorization header is set
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "user_already_loggedin"
+     *     }
+     * @apiError (Error 404) NotFound User not found
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "error": "user_not_found"
+     *     }
      */
     rest.sendPassword = {
         permissions: [],
@@ -330,22 +499,77 @@ define([
         }
     };
 
-    /**
-     * @function register
-     * @description Register new user
-     * @property /api/[version]/user url
-     * @property {POST} Method - request method
-     * @param {string} firstName - the firstname (optional)
-     * @param {string} lastName - the lastname (optional)
-     * @param {string} email - the email address
-     * @param {string} password - the password
-     * @return {string} password - new password
-     * @throws 400 'already_logged_in' - if user is already logged in
-     * @throws 400 'missing_parameter' - PARAMETER=email|password|language if email,password is empty
-     * @throws 400 'invalid_structure' - PARAMETER=email|password if email,password address doesn't match the regex
-     * @throws 400 'custom_validation' - param language if language not known or valid
-     * @throws 400 'wrong_type' - PARAMETER=email|firstName|lastName|password|language is no string
-     * @throws 400 'email_exists' - if user already exists
+     /**
+     * @api {post} /user Register User
+     * @apiName Register
+     * @apiDescription Register a new User
+     * @apiGroup User
+     * @apiVersion 1.0.0
+     * @apiPermission unauthorized
+     * @apiParam {String} email email address to send new pw
+     * @apiParam {String} password account password
+     * @apiParam {String} [firstName] first name of user
+     * @apiParam {String} [lastName] last name of user
+     * @apiParamExample {json} request body
+                   { "email": "bengtler@gmail.com",
+                     "password": "123456",
+                     "firstName": "Bengt",
+                     "lastName": "Weiße" }
+     * @apiSuccess {Object} user the user object.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "firstName": "Bengt",
+     *       "lastName": "Weiße",
+     *       "_id": "507f191e810c19729de860ea",
+     *       "email": "bengtler@gmail.com"
+     *     }
+     *
+     * @apiError (Error 5xx) InternalServerError An error while processing mongoDB query occurs.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "error": "MONGODB ERROR OBJECT"
+     *     }
+     *
+     * @apiError (Error 400) MissingParameter a parameter is missing
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "missing_parameter"
+     *     }
+     * @apiError (Error 400) InvalidStructure structure of a parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_structure",
+     *       "param": "email"
+     *     }
+     * @apiError (Error 400) WrongDatatype type of parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "wrong_type",
+     *       "param": "email"
+     *     }
+     *
+     * @apiError (Error 400) AlreadyLoggedIn valid authorization header is set
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "user_already_loggedin"
+     *     }
+     * @apiError (Error 400) UserExists a user with the given email already exists
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "email_exists"
+     *     }
      */
     rest.register = {
         params: {
@@ -425,27 +649,91 @@ define([
         }
     };
 
-    /**
-     * @function account
-     * @description update user
-     * @property /api/[version]/user/account url
-     * @property {PUT} Method - request method
-     * @property Authorization - set request header Authorization: TOKENTYPE ACCESSTOKEN
-     * @property Permissions - User
-     * @param {string} firstName - the firstname (optional)
-     * @param {string} lastName - the lastname (optional)
-     * @param {string} email - the email address (optional)
-     * @param {string} password - the password (optional)
-     * @param {string} newPassword - the new password (optional)
-     * @param {string} username - username (optional)
-     * @return {object} user - object
-     * @throws 404 'user_not_found' - if user is not found
-     * @throws 400 'missing_parameter' - PARAMETER=password if password is missing to set new email or pwd
-     * @throws 400 'invalid_structure' - PARAMETER=email|password|newPassowrd if email address, password doesn't match the regex
-     * @throws 400 'invalid_password' - old password is wrong
-     * @throws 400 'wrong_type' - PARAMETER=email|firstName|lastName|password|language is no string
-     * @throws 400 'email_exists' - if user already exists
-     * @throws 400 'username_exists' - if username already exists
+     /**
+     * @api {put} /user/account Update User
+     * @apiName UpdateAccount
+     * @apiDescription Update current loggedin user
+     * @apiGroup User
+     * @apiVersion 1.0.0
+     * @apiPermission User
+     * @apiParam {String} [email] email address to send new pw
+     * @apiParam {String} [password] account password to set new email, password
+     * @apiParam {String} [newPassword] new account password
+     * @apiParam {String} [firstName] first name of user
+     * @apiParam {String} [lastName] last name of user
+     * @apiParam {String} [username] set unique username
+     * @apiParamExample {json} request body
+                   { "email": "bengtler@gmail.com",
+                     "username": "killercodemonkey",
+                     "password": "123456",
+                     "newPassword": "123457"
+                     "firstName": "Bengt",
+                     "lastName": "Weiße" }
+     * @apiHeader {String} Authorization Set TOKENTYPE ACCESSTOKEN for possible authorization
+     * @apiHeaderExample {json} Authorization-Header-Example:
+                      { "Authorization": "Bearer mF_9.B5f-4.1JqM" }
+     * @apiSuccess {Object} user the user object.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "firstName": "Bengt",
+     *       "lastName": "Weiße",
+     *       "username": "killercodemonkey",
+     *       "_id": "507f191e810c19729de860ea",
+     *       "email": "bengtler@gmail.com"
+     *     }
+     *
+     * @apiError (Error 5xx) InternalServerError An error while processing mongoDB query occurs.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 500 Internal Server Error
+     *     {
+     *       "error": "MONGODB ERROR OBJECT"
+     *     }
+     *
+     * @apiError (Error 400) MissingParameter a parameter is missing
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "missing_parameter"
+     *     }
+     * @apiError (Error 400) InvalidStructure structure of a parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_structure",
+     *       "param": "email"
+     *     }
+     * @apiError (Error 400) WrongDatatype type of parameter is invalid
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "wrong_type",
+     *       "param": "email"
+     *     }
+     *
+     * @apiError (Error 400) InvalidPassword old password is wrong
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Bad Request
+     *     {
+     *       "error": "invalid_password"
+     *     }
+     * @apiError (Error 400) EmailExists a user with the given email already exists
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "email_exists"
+     *     }
+     * @apiError (Error 400) UsernameExists a user with the given email already exists
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 400 Not Found
+     *     {
+     *       "error": "username_exists"
+     *     }
      */
     rest.update = {
         params: {
