@@ -4,7 +4,7 @@ define(function () {
     'use strict';
 
     return {
-        dbname: 'stylecheck',
+        dbname: 'nogo',
         host: '127.0.0.1',
         port: '27017',
         maxConnections: 20,
