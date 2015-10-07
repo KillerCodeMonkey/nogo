@@ -1,13 +1,11 @@
 /*global define*/
 define([
-    'node-promise',
+    'bluebird',
     'path',
     'fs',
     'underscore'
-], function (promise, path, fs, _) {
+], function (Promise, path, fs, _) {
     'use strict';
-
-    var Promise = promise.Promise;
 
     function regExpEscape(val) {
         return val.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
@@ -218,8 +216,7 @@ define([
         },
         regExpEscape: regExpEscape,
         getPage: function (Model, selector, populates, limiting, skipping, selecting, sorting, sortDesc, slices, lean) {
-            var q = new Promise(),
-                query;
+            var query;
 
             // Build up query for Pager
             selector = selector || {};
@@ -256,19 +253,18 @@ define([
             if (lean || lean === undefined) {
                 query.lean();
             }
-            query.exec(function (err, documents) {
-                if (err) {
-                    return q.reject(err);
-                }
-                Model.count(selector).exec(function (countErr, counter) {
-                    if (countErr) {
-                        return q.reject(countErr);
-                    }
-                    q.resolve([documents, counter]);
-                });
+            return new Promise(function (resolve, reject) {
+                query
+                    .exec()
+                    .then(function (documents) {
+                        Model
+                            .count(selector)
+                            .exec()
+                            .then(function (counter) {
+                                resolve([documents, counter]);
+                            }, reject);
+                    }, reject);
             });
-
-            return q;
         }
     };
 });

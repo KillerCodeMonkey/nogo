@@ -1,55 +1,47 @@
 define([
-    'node-promise',
+    'bluebird',
     'fs'
-], function (promise, fs) {
+], function (Promise, fs) {
     'use strict';
 
-    var Promise = promise.Promise,
-        endpoints = {},
+    var endpoints = {},
         loaded = false,
         models = {};
 
     // require model and enpoint
     function requireFile(file, endpoints, models) {
-        var filePromise = new Promise(),
-            nameWithoutExtension = file.substr(0, file.lastIndexOf('.'));
+        var nameWithoutExtension = file.substr(0, file.lastIndexOf('.'));
 
-        // log.info('#LOAD model: ' + nameWithoutExtension);
-
-        require(['models/' + nameWithoutExtension], function (model) {
-            models[nameWithoutExtension] = model;
-            fs.exists('endpoints/' + file, function (exists) {
-                if (exists) {
-                    // log.info('#LOAD endpoint: ' + nameWithoutExtension);
-                    require(['endpoints/' + nameWithoutExtension], function (endpoint) {
-                        endpoints[nameWithoutExtension] = endpoint;
-                        filePromise.resolve();
-                    });
-                } else {
-                    filePromise.resolve();
-                }
+        return new Promise(function (resolve) {
+            require(['models/' + nameWithoutExtension], function (model) {
+                models[nameWithoutExtension] = model;
+                fs.exists('endpoints/' + file, function (exists) {
+                    if (exists) {
+                        // log.info('#LOAD endpoint: ' + nameWithoutExtension);
+                        require(['endpoints/' + nameWithoutExtension], function (endpoint) {
+                            endpoints[nameWithoutExtension] = endpoint;
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                });
             });
         });
-
-        return filePromise;
     }
 
     function clearModel(model) {
-        var prom = new Promise();
-
-        model.collection.dropAllIndexes(function () {
-            // log.info(model.modelName + ': try dropAllIndexes');
-            model.remove(function (err) {
-                if (err) {
-                    prom.reject(err);
-                } else {
-                    // log.info(model.modelName + ': try drop');
-                    prom.resolve();
-                }
+        return new Promise(function (resolve, reject) {
+            model.collection.dropAllIndexes(function () {
+                model.remove(function (err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
             });
         });
-
-        return prom;
     }
 
     function clearModels(models) {
@@ -68,28 +60,28 @@ define([
     }
 
     function load() {
-        var loader = new Promise(),
-            tasks = [];
-        if (!loaded) {
-            fs.readdir('models', function (err, files) {
-                var i = 0;
-                if (err) {
-                    console.error('error during reading models');
-                    loader.reject();
-                }
-                for (i; i < files.length; i = i + 1) {
-                    tasks.push(requireFile(files[i], endpoints, models));
-                }
-                promise.allOrNone(tasks).then(function () {
-                    loaded = true;
-                    loader.resolve([models, endpoints]);
-                }, loader.reject);
-            });
-        } else {
-            loader.resolve([models, endpoints]);
-        }
+        var tasks = [];
 
-        return loader;
+        return new Promise(function (resolve, reject) {
+            if (!loaded) {
+                fs.readdir('models', function (err, files) {
+                    var i = 0;
+                    if (err) {
+                        console.error('error during reading models');
+                        return reject();
+                    }
+                    for (i; i < files.length; i = i + 1) {
+                        tasks.push(requireFile(files[i], endpoints, models));
+                    }
+                    Promise.all(tasks).then(function () {
+                        loaded = true;
+                        return resolve([models, endpoints]);
+                    }, reject);
+                });
+            } else {
+                resolve([models, endpoints]);
+            }
+        });
     }
 
     // load all models (in src/models) and the associated endpoint
@@ -149,11 +141,7 @@ define([
         },
 
         clearModels: function (models) {
-            var newPromise = new Promise();
-
-            promise.all(clearModels(models)).then(newPromise.resolve, newPromise.reject);
-
-            return newPromise;
+            return Promise.all(clearModels(models));
         }
     };
 });

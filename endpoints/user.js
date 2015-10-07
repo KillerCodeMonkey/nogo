@@ -1,17 +1,16 @@
 define([
     'appConfig',
-    'node-promise',
+    'bluebird',
     'underscore',
     'util/mailer',
     'util/helper'
-], function (appConfig, promise, _, Mailer, helper) {
+], function (appConfig, Promise, _, Mailer, helper) {
     'use strict';
     var rest = {},
         fields = [
             'username',
             '_id'
-        ],
-        Promise = promise.Promise;
+        ];
 
     function stripUser(user) {
         delete user.hashedPassword;
@@ -19,26 +18,23 @@ define([
     }
 
     function getUser(selector, User) {
-        var q = new Promise();
-
-        User.findOne(selector, function (err, user) {
-            if (err) {
-                return q.reject(err);
-            }
-            if (!user) {
-                return q.resolve(false);
-            }
-            return q.resolve(true);
+        return new Promise(function (resolve, reject) {
+            User
+                .findOne(selector)
+                .exec()
+                .then(function (user) {
+                    if (!user) {
+                        return resolve(false);
+                    }
+                    return resolve(true);
+                }, reject);
         });
-
-        return q;
     }
 
     function createPager(User, selector, pager, lean, getAllFields) {
         selector = selector || {};
         pager = pager || {};
-        var q = new Promise(),
-            populates = [],
+        var populates = [],
             filter = pager.filter || {};
 
         selector.permissions = {
@@ -62,22 +58,22 @@ define([
             }
         }
 
-        helper.getPage(User, selector, populates, pager.limit, pager.skip, !getAllFields ? fields.join(' ') : undefined, pager.orderBy, pager.orderDesc, lean).then(function (results) {
-            var rows = results[0],
-                counter = results[1];
+        return new Promise(function (resolve, reject) {
+            helper.getPage(User, selector, populates, pager.limit, pager.skip, !getAllFields ? fields.join(' ') : undefined, pager.orderBy, pager.orderDesc, lean).then(function (results) {
+                var rows = results[0],
+                    counter = results[1];
 
-            pager.count = counter;
-            if (pager.limit) {
-                pager.pages = Math.floor(pager.count / pager.limit);
-                if (pager.count % pager.limit) {
-                    pager.pages = pager.pages + 1;
+                pager.count = counter;
+                if (pager.limit) {
+                    pager.pages = Math.floor(pager.count / pager.limit);
+                    if (pager.count % pager.limit) {
+                        pager.pages = pager.pages + 1;
+                    }
                 }
-            }
 
-            q.resolve([rows, pager]);
-        }, q.reject);
-
-        return q;
+                resolve([rows, pager]);
+            }, reject);
+        });
     }
 
     /**
@@ -113,7 +109,7 @@ define([
         pager: true,
         exec: function (req, res, User) {
             var selector = {},
-            getAllFields = true;
+                getAllFields = true;
             if (req.user) {
                 selector._id = { // remove own user
                     $ne: req.user._id
@@ -253,25 +249,27 @@ define([
         models: ['authentication'],
         exec: function (req, res, Authentication) {
             // delete authentications of user if admin deletes him
-            Authentication.remove({
-                user: req.object._id
-            }, function (err) {
-                if (err) {
+            Authentication
+                .remove({
+                    user: req.object._id
+                })
+                .exec()
+                .then(function () {
+                    // delete user
+                    req.object
+                        .remove()
+                        .then(function () {
+                            res.send();
+                        }, function (err) {
+                            return res.status(500).send({
+                                error: err
+                            });
+                        });
+                }, function (err) {
                     return res.status(500).send({
                         error: err
                     });
-                }
-                // delete user
-                req.object.remove(function (removeErr) {
-                    if (removeErr) {
-                        return res.status(500).send({
-                            error: removeErr
-                        });
-                    }
-
-                    res.send();
                 });
-            });
         }
     };
 
@@ -802,7 +800,7 @@ define([
                     email: params.email
                 }, User));
             }
-            promise.allOrNone(tasks).then(function (results) {
+            Promise.all(tasks).then(function (results) {
                 if (tasks.length && results && results.length && results[0]) {
                     return res.status(400).send({
                         error: 'email_exists'
@@ -816,7 +814,7 @@ define([
                         username: params.username
                     }, User));
                 }
-                promise.allOrNone(tasks).then(function (userResult) {
+                Promise.all(tasks).then(function (userResult) {
                     if (tasks.length && userResult && userResult.length && userResult[0]) {
                         return res.status(400).send({
                             error: 'username_exists'

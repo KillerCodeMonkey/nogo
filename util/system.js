@@ -1,16 +1,14 @@
 /*global define*/
 /*jslint vars:true,nomen:true*/
 define([
-    'node-promise',
+    'bluebird',
     'appConfig',
     'databaseConfig',
     'fs',
     'mongoose',
     'util/modelEndpointHandler'
-], function (promise, appConfig, databaseConfig, fs, mongoose, meHandler) {
+], function (Promise, appConfig, databaseConfig, fs, mongoose, meHandler) {
     'use strict';
-
-    var Promise = promise.Promise;
 
     var System = function () {
 
@@ -55,55 +53,52 @@ define([
         };
 
         this.createSystem = function (username, password) {
-            var createtask = new Promise();
+            return new Promise(function (resolve, reject) {
+                // DB connection
+                var connection = mongoose.createConnection(databaseConfig.host, databaseConfig.dbname, databaseConfig.port);
 
-            // DB connection
-            var connection = mongoose.createConnection(databaseConfig.host, databaseConfig.dbname, databaseConfig.port);
+                connection.on('open', function () {
+                    connection.db.dropDatabase(function () {
+                        connection.close();
+                        var newConnection = mongoose.createConnection(databaseConfig.host, databaseConfig.dbname, databaseConfig.port);
+                        newConnection.on('open', function () {
+                            // clear db.
+                            meHandler.load().then(function () {
+                                meHandler.init(newConnection, function (models) {
+                                    var User = models.User,
+                                        admin = new User({
+                                            email: username,
+                                            password: password,
+                                            language: 'de',
+                                            permissions: [appConfig.permissions.admin]
+                                        });
 
-            connection.on('open', function () {
-                connection.db.dropDatabase(function () {
-                    connection.close();
-                    var newConnection = mongoose.createConnection(databaseConfig.host, databaseConfig.dbname, databaseConfig.port);
-                    newConnection.on('open', function () {
-                        // clear db.
-                        meHandler.load().then(function () {
-                            meHandler.init(newConnection, function (models) {
-                                var User = models.User,
-                                    admin = new User({
-                                        email: username,
-                                        password: password,
-                                        language: 'de',
-                                        permissions: [appConfig.permissions.admin]
-                                    });
-
-                                admin.save(function (err) {
-                                    if (err) {
-                                        return createtask.reject(err);
-                                    }
-                                    newConnection.close();
-                                    createtask.resolve();
-                                    console.info('Finish: #System user created');
+                                    admin
+                                        .save()
+                                        .then(function () {
+                                            newConnection.close();
+                                            resolve();
+                                            console.info('Finish: #System user created');
+                                        }, reject);
                                 });
+                            }, function (err) {
+                                newConnection.close();
+                                reject(err);
                             });
-                        }, function (err) {
+                        });
+
+                        newConnection.on('error', function (err) {
                             newConnection.close();
-                            createtask.reject(err);
+                            reject(err);
                         });
                     });
+                });
 
-                    newConnection.on('error', function (err) {
-                        newConnection.close();
-                        createtask.reject(err);
-                    });
+                connection.on('error', function (err) {
+                    connection.close();
+                    reject(err);
                 });
             });
-
-            connection.on('error', function (err) {
-                connection.close();
-                createtask.reject(err);
-            });
-
-            return createtask;
         };
     };
 
