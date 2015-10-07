@@ -7,45 +7,39 @@ define([
     'crypto',
     'appConfig',
     'databaseConfig',
-    'node-promise'
-], /** @lends Authentication */ function (jwt, crypto, appConfig, dbConfig, promise) {
+    'bluebird'
+], /** @lends Authentication */ function (jwt, crypto, appConfig, dbConfig, Promise) {
     'use strict';
 
-    var Promise = promise.Promise,
-        rest = {};
+    var rest = {};
 
     function removeAuthenticationByUUID(uuid, Authentication) {
-        var q = new Promise();
-
-        Authentication.find({
-            uuid: uuid
-        }).distinct('_id').exec(function (err, authenticationIDs) {
-            if (err) {
-                return q.reject(err);
-            }
-            if (authenticationIDs && authenticationIDs.length) {
-                Authentication.remove({
-                    _id: {
-                        $in: authenticationIDs
+        return new Promise(function (resolve, reject) {
+            Authentication
+                .find({
+                    uuid: uuid
+                })
+                .distinct('_id')
+                .exec()
+                .then(function (authenticationIDs) {
+                    if (authenticationIDs && authenticationIDs.length) {
+                        return Authentication
+                            .remove({
+                                _id: {
+                                    $in: authenticationIDs
+                                }
+                            })
+                            .exec()
+                            .then(resolve, reject);
                     }
-                }, function (err) {
-                    if (err) {
-                        return q.reject(err);
-                    }
-                    q.resolve();
-                });
-            } else {
-                q.resolve();
-            }
+                    return resolve();
+                }, reject);
         });
-
-        return q;
     }
 
     // store new authentication for user
     function generateAuthentication(user, Authentication, token, platform, uuid) {
-        var $q = new Promise(),
-            secret = crypto.randomBytes(128).toString('base64'),
+        var secret = crypto.randomBytes(128).toString('base64'),
             userData = {
                 id: user.user || user._id,
                 firstName: user.firstName,
@@ -54,7 +48,7 @@ define([
                 creationDate: user.creationDate,
                 permissions: user.permissions,
                 secret: secret,
-                expiresInMinutes: appConfig.tokenExpiresInMinutes,
+                expiresIn: appConfig.tokenExpiresInSeconds,
                 tokenType: 'Bearer'
             },
             accessToken,
@@ -84,15 +78,13 @@ define([
             auth.uuid = uuid;
         }
 
-        auth.save(function (err) {
-            if (err) {
-                $q.reject(err);
-            } else {
-                $q.resolve(userData);
-            }
+        return new Promise(function (resolve, reject) {
+            auth
+                .save()
+                .then(function () {
+                    resolve(userData);
+                }, reject);
         });
-
-        return $q;
     }
 
      /**
@@ -203,39 +195,42 @@ define([
                 });
             }
 
-            User.findOne({
-                $or: [{
-                    email: req.params.login
-                }, {
-                    username: req.params.login
-                }]
-            }, function (err, user) {
-                if (err) {
-                    return res.status(500).send({
-                        error: err
-                    });
-                }
-                if (!user) {
-                    return res.status(400).send({
-                        error: 'user_not_exists'
-                    });
-                }
-                if (!user.checkPassword(req.params.password)) {
-                    return res.status(400).send({
-                        error: 'invalid_login_password_combination'
-                    });
-                }
-                // remove other authentications of uuid
-                if (req.params.uuid) {
-                    tasks.push(removeAuthenticationByUUID(req.params.uuid, Authentication));
-                }
-                promise.allOrNone(tasks).then(function () {
-                    generateAuthentication(user, Authentication, req.params.token, req.params.platform, req.params.uuid).then(function (userData) {
-                        // generate new password after login.
-                        userData.user = user.toObject();
-                        delete userData.user.salt;
-                        delete userData.user.hashedPassword;
-                        res.send(userData);
+            User
+                .findOne({
+                    $or: [{
+                        email: req.params.login
+                    }, {
+                        username: req.params.login
+                    }]
+                })
+                .exec()
+                .then(function (user) {
+                    if (!user) {
+                        return res.status(400).send({
+                            error: 'user_not_exists'
+                        });
+                    }
+                    if (!user.checkPassword(req.params.password)) {
+                        return res.status(400).send({
+                            error: 'invalid_login_password_combination'
+                        });
+                    }
+                    // remove other authentications of uuid
+                    if (req.params.uuid) {
+                        tasks.push(removeAuthenticationByUUID(req.params.uuid, Authentication));
+                    }
+                    Promise.settle(tasks).then(function () {
+                        generateAuthentication(user, Authentication, req.params.token, req.params.platform, req.params.uuid).then(function (userData) {
+                            // generate new password after login.
+                            userData.user = user.toObject();
+                            delete userData.user.salt;
+                            delete userData.user.hashedPassword;
+                            res.send(userData);
+                        }, function (err) {
+                            res.status(500).send({
+                                error: err
+                            });
+                        });
                     }, function (err) {
                         res.status(500).send({
                             error: err
@@ -246,7 +241,6 @@ define([
                         error: err
                     });
                 });
-            });
         }
     };
 
@@ -267,33 +261,44 @@ define([
         models: ['authentication'],
         exec: function (req, res, Authentication) {
             var params = req.params;
-            Authentication.remove({
-                platform: dbConfig.dbname
-            }, function () {
-                Authentication.findOne({
-                    platform: params.platform,
-                    uuid: params.uuid,
-                    user: req.user._id
-                }, function (err, authentication) {
-                    if (err) {
-                        return res.status(500).send({
-                            error: err
-                        });
-                    }
-                    if (!authentication) {
-                        return res.status(404).send();
-                    }
-                    authentication.token = params.token;
-                    authentication.save(function (err) {
-                        if (err) {
+
+            Authentication
+                .remove({
+                    platform: dbConfig.dbname
+                })
+                .exec()
+                .then(function () {
+                    Authentication
+                        .findOne({
+                            platform: params.platform,
+                            uuid: params.uuid,
+                            user: req.user._id
+                        })
+                        .exec()
+                        .then(function (authentication) {
+                            if (!authentication) {
+                                return res.status(404).send();
+                            }
+                            authentication.token = params.token;
+                            authentication
+                                .save()
+                                .then(function () {
+                                    res.send({});
+                                }, function (err) {
+                                    return res.status(500).send({
+                                        error: err
+                                    });
+                                });
+                        }, function (err) {
                             return res.status(500).send({
                                 error: err
                             });
-                        }
-                        res.send({});
+                        });
+                }, function (err) {
+                    return res.status(500).send({
+                        error: err
                     });
                 });
-            });
         }
     };
 
@@ -355,52 +360,57 @@ define([
         exec: function (req, res, Authentication, User) {
             var params = req.params;
 
-            Authentication.findOne({
-                accessToken: params.accessToken
-            }, function (err, authentication) {
-                if (err) {
-                    return res.status(500).send({
-                        error: err
-                    });
-                }
-                if (!authentication) {
-                    return res.status(403).send();
-                }
-                if (authentication.refreshToken !== params.refreshToken) {
-                    return res.status(400).send({
-                        error: 'invalid_refresh_token'
-                    });
-                }
-                User.findById(authentication.user, function (usererr, user) {
-                    if (usererr) {
-                        return res.status(500).send({
-                            error: err
-                        });
+            Authentication
+                .findOne({
+                    accessToken: params.accessToken
+                })
+                .exec()
+                .then(function (authentication) {
+                    if (!authentication) {
+                        return res.status(403).send();
                     }
-                    if (!user) {
+                    if (authentication.refreshToken !== params.refreshToken) {
                         return res.status(400).send({
-                            error: 'user_not_found'
+                            error: 'invalid_refresh_token'
                         });
                     }
-                    var token = authentication.token,
-                        platform = authentication.platform,
-                        uuid = authentication.uuid;
-                    authentication.remove(function (err) {
-                        if (err) {
+                    User
+                        .findById(authentication.user)
+                        .exec()
+                        .then(function (user) {
+                            if (!user) {
+                                return res.status(400).send({
+                                    error: 'user_not_found'
+                                });
+                            }
+                            var token = authentication.token,
+                                platform = authentication.platform,
+                                uuid = authentication.uuid;
+                            authentication
+                                .remove()
+                                .then(function () {
+                                    generateAuthentication(user, Authentication, token, platform, uuid).then(function (userData) {
+                                        res.send(userData);
+                                    }, function (err) {
+                                        res.status(500).send({
+                                            error: err
+                                        });
+                                    });
+                                }, function (err) {
+                                    return res.status(500).send({
+                                        error: err
+                                    });
+                                });
+                        }, function (err) {
                             return res.status(500).send({
                                 error: err
                             });
-                        }
-                        generateAuthentication(user, Authentication, token, platform, uuid).then(function (userData) {
-                            res.send(userData);
-                        }, function (err) {
-                            res.status(500).send({
-                                error: err
-                            });
                         });
+                }, function (err) {
+                    return res.status(500).send({
+                        error: err
                     });
                 });
-            });
         }
     };
 
@@ -431,26 +441,29 @@ define([
         permissions: [appConfig.permissions.user, appConfig.permissions.admin],
         models: ['authentication'],
         exec: function (req, res, Authentication) {
-            Authentication.findOne({
-                accessToken: req.accessToken
-            }, function (err, authentication) {
-                if (err) {
+            Authentication
+                .findOne({
+                    accessToken: req.accessToken
+                })
+                .exec()
+                .then(function (authentication) {
+                    if (!authentication) {
+                        return res.status(403).send();
+                    }
+                    authentication
+                        .remove()
+                        .then(function () {
+                            res.send();
+                        }, function (err) {
+                            return res.status(500).send({
+                                error: err
+                            });
+                        });
+                }, function (err) {
                     return res.status(500).send({
                         error: err
                     });
-                }
-                if (!authentication) {
-                    return res.status(403).send();
-                }
-                authentication.remove(function (err) {
-                    if (err) {
-                        return res.status(500).send({
-                            error: err
-                        });
-                    }
-                    res.send();
                 });
-            });
         }
     };
 

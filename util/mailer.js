@@ -2,13 +2,13 @@ define([
     'nodemailer',
     'nodemailer-smtp-transport',
     'config/smtp',
-    'node-promise',
+    'bluebird',
     'path',
     'module',
     'email-templates',
     'fs',
     'appConfig'
-], function (nodemailer, smtpTransport, smtpConfig, promise, path, module, emailTemplates, fs, appConfig) {
+], function (nodemailer, smtpTransport, smtpConfig, Promise, path, module, emailTemplates, fs, appConfig) {
     'use strict';
 
     var templateDir = path.resolve(path.dirname(module.uri), '..', 'templates'),
@@ -16,23 +16,21 @@ define([
         transport;
 
     function getTranslations(templateDir, templateName, params, language) {
-        var q = new promise.Promise();
-
-        fs.exists(templateDir + '/' + templateName + '/translations.js', function (exists) {
-            if (exists) {
-                require(['templates/' + templateName + '/translations'], function (fileContent) {
-                    if (fileContent[language]) {
-                        params.dict = fileContent[language];
-                        return q.resolve();
-                    }
-                    q.reject();
-                });
-            } else {
-                q.reject();
-            }
+        return new Promise(function (resolve, reject) {
+            fs.exists(templateDir + '/' + templateName + '/translations.js', function (exists) {
+                if (exists) {
+                    require(['templates/' + templateName + '/translations'], function (fileContent) {
+                        if (fileContent[language]) {
+                            params.dict = fileContent[language];
+                            return resolve();
+                        }
+                        reject();
+                    });
+                } else {
+                    reject();
+                }
+            });
         });
-
-        return q;
     }
 
     if (smtpConfig) {
@@ -81,7 +79,7 @@ define([
 
         tasks.push(getTranslations(self.templateDir, templateName, params, language));
 
-        promise.allOrNone(tasks).then(function () {
+        Promise.all(tasks).then(function () {
             emailTemplates(self.templateDir, function (err, template) {
                 if (err) {
                     return cb(err);

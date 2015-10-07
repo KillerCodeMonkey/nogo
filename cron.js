@@ -6,7 +6,7 @@ define([
     'use strict';
 
     var agenda = new Agenda({
-        name: 'Frizisto cronjobs',
+        name: 'api cronjobs',
         db: {
             address: databaseConfig.host + ':' + databaseConfig.port + '/agenda?autoReconnect=true'
         }
