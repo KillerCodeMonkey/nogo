@@ -9,7 +9,7 @@ define([
         models = {};
 
     // require model and enpoint
-    function requireFile(file, endpoints, models) {
+    function requireFile(file) {
         var nameWithoutExtension = file.substr(0, file.lastIndexOf('.'));
 
         return new Promise(function (resolve) {
@@ -33,23 +33,19 @@ define([
     function clearModel(model) {
         return new Promise(function (resolve, reject) {
             model.collection.dropAllIndexes(function () {
-                model.remove(function (err) {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                });
+                model
+                    .remove()
+                    .then(resolve, reject);
             });
         });
     }
 
-    function clearModels(models) {
+    function clearModels(modelsToClear) {
         var tasks = [],
             key,
             model;
 
-        for (key in models) {
+        for (key in modelsToClear) {
             if (models.hasOwnProperty(key)) {
                 model = models[key];
                 tasks.push(clearModel(model));
@@ -107,7 +103,11 @@ define([
                 }
                 initModels.unshift(res);
                 initModels.unshift(req);
-                callback.apply(undefined, initModels);
+                try {
+                    callback.apply(undefined, initModels);
+                } catch (e) {
+                    console.log(e);
+                }
             }, function () {
                 return res.status(500).send({
                     error: 'model_endpoint_loading_failed'
@@ -140,8 +140,8 @@ define([
             });
         },
 
-        clearModels: function (models) {
-            return Promise.all(clearModels(models));
+        clearModels: function (modelsToClear) {
+            return Promise.all(clearModels(modelsToClear));
         }
     };
 });
