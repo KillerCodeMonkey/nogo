@@ -1,3 +1,4 @@
+/* global define */
 define([
     'util/modelEndpointHandler'
 ], function (modelEndpointHandler) {
@@ -9,14 +10,13 @@ define([
             actionName = req.params.action,
             objectId = req.params.objectid,
             endpoint,
-            method = req.method.toLowerCase(),
-            actionList;
+            method = req.method.toLowerCase();
 
         function loadObject(cb) {
             if (!objectId) {
                 return cb(null);
             }
-            modelEndpointHandler.initDb(req, res, [className], function (req, res, model) {
+            modelEndpointHandler.initDb(req, res, [className], function (req2, res2, model) {
                 model.findById(objectId, function (err, object) {
                     if (err) {
                         return cb({
@@ -116,11 +116,11 @@ define([
             }
 
             //  load all actions
-            actionList = endpoint[version][method];
+            var actionList = endpoint[version][method];
 
-            getAction(actionList, function (err, action) {
-                if (err) {
-                    return res.status(404).send(err);
+            getAction(actionList, function (actionErr, action) {
+                if (actionErr) {
+                    return res.status(404).send(actionErr);
                 }
                 if (!req.customData) {
                     req.customData = {};

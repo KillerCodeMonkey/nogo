@@ -38,39 +38,43 @@ define([
                 }
 
                 modelEndpointHandler.initDb(req, res, ['authentication', 'user'], function (req, res, Authentication, User) {
-                    Authentication.findOne({
-                        accessToken: token
-                    }, function (error, authentication) {
-                        if (error) {
+                    Authentication
+                        .findOne({
+                            accessToken: token
+                        })
+                        .exec()
+                        .then(function (authentication) {
+                            if (!authentication) {
+                                return res.status(403).send({
+                                    error: 'invalid_authorization'
+                                });
+                            }
+                            User
+                                .findById(decoded.id)
+                                .exec()
+                                .then(function (user) {
+                                    if (!user) {
+                                        return res.status(404).send({
+                                            error: 'user_not_found'
+                                        });
+                                    }
+                                    // everything works -> put decoded user on req.
+                                    if (!req.customData) {
+                                        req.customData = {};
+                                    }
+                                    req.customData.user = user;
+                                    req.customData.accessToken = token;
+                                    return next();
+                                }, function (error) {
+                                    return res.status(500).send({
+                                        error: error
+                                    });
+                                });
+                        }, function (error) {
                             return res.status(500).send({
                                 error: error
                             });
-                        }
-                        if (!authentication) {
-                            return res.status(403).send({
-                                error: 'invalid_authorization'
-                            });
-                        }
-                        User.findById(decoded.id, function (err, user) {
-                            if (err) {
-                                return res.status(500).send({
-                                    error: err
-                                });
-                            }
-                            if (!user) {
-                                return res.status(404).send({
-                                    error: 'user_not_found'
-                                });
-                            }
-                            // everything works -> put decoded user on req.
-                            if (!req.customData) {
-                                req.customData = {};
-                            }
-                            req.customData.user = user;
-                            req.customData.accessToken = token;
-                            return next();
                         });
-                    });
                 });
             });
         } catch (e) {
