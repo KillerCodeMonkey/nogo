@@ -166,7 +166,7 @@ define([
         permissions: [appConfig.permissions.user],
         models: [],
         exec: function (req, res) {
-            res.send(req.user.toObject());
+            res.send(req.user.toObject(true));
         }
     };
 
@@ -210,7 +210,7 @@ define([
                     error: 'permission_denied'
                 });
             }
-            var user = req.object.toObject();
+            var user = req.object.toObject(true);
 
             return res.send({
                 username: user.username,
@@ -628,7 +628,7 @@ define([
                         });
                     }
 
-                    var object = newUser.toObject(),
+                    var object = newUser.toObject(true),
                         Mail = new Mailer();
 
                     if (process.env.NODE_ENV !== 'production') {
@@ -841,7 +841,7 @@ define([
                                 error: err
                             });
                         }
-                        return res.send(saved.toObject());
+                        return res.send(saved.toObject(true));
                     });
                 }, function (err) {
                     res.status(500).send({

@@ -222,7 +222,7 @@ define([
                     Promise.settle(tasks).then(function () {
                         generateAuthentication(user, Authentication, req.params.token, req.params.platform, req.params.uuid).then(function (userData) {
                             // generate new password after login.
-                            userData.user = user.toObject();
+                            userData.user = user.toObject(true);
                             delete userData.user.salt;
                             delete userData.user.hashedPassword;
                             res.send(userData);
