@@ -1,7 +1,7 @@
 language: node_js
 addons:
     code_climate:
-        repo_token: f4dd893f866f4fe38fe9498d0b55b2d984de008f7baf2cf6aeb0884e144d3625
+        repo_token:
 services: mongodb
 node_js:
   - "4.2.2"
@@ -10,3 +10,6 @@ install: npm install
 before_script:
   - grunt exec:install
 script: grunt exec:coverage
+after_success:
+  - npm install codeclimate-test-reporter
+  - codeclimate-test-reporter < coverage/lcov.info
