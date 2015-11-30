@@ -5,11 +5,10 @@ addons:
 services: mongodb
 node_js:
   - "4.2.2"
-before_install: npm install -g grunt-cli
+before_install: npm install -g grunt-cli codeclimate-test-reporter
 install: npm install
 before_script:
   - grunt exec:install
-script: grunt exec:coverage
+script: npn run coverage
 after_success:
-  - npm install codeclimate-test-reporter
-  - codeclimate-test-reporter < coverage/lcov.info
+  - "cat ./coverage/lcov.info | codeclimate"

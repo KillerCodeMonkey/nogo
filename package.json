@@ -52,7 +52,8 @@
         "supertest": "1.1.0",
         "istanbul": "0.4.0",
         "grunt-mocha-test": "0.12.7",
-        "grunt-apidoc": "0.10.1"
+        "grunt-apidoc": "0.10.1",
+        "mocha": "2.3.4"
     },
     "engines": {
         "node":  ">= 0.12.8"
@@ -62,5 +63,8 @@
         "url" : "https://host/api/v1",
         "apiSampleRequest": "on",
         "sampleUrl": "localhost:8000/api/v1"
+    },
+    "scripts": {
+        "coverage": "./node_modules/.bin/istanbul cover --report lcovonly grunt tests"
     }
 }

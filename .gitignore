@@ -3,3 +3,5 @@ static
 .idea
 apiDoc
 apidoc
+coverage
+npm-debug.log
