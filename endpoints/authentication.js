@@ -340,7 +340,7 @@ rest.refresh = {
                     throw new RequestError(null, 404);
                 }
                 if (authentication.refreshToken !== params.refreshToken) {
-                    throw new RequestError('invalid_refresh_token', 403);
+                    throw new RequestError('invalid_refresh_token', 400);
                 }
 
                 oldAuth = authentication;

@@ -398,7 +398,7 @@ describe('Authentication model', function () {
                     'accessToken': '1234',
                     'refreshToken': user.refreshToken
                 })
-                .expect(403, done);
+                .expect(404, done);
         });
         it('400 - wrong refreshToken', function (done) {
             request(app)
