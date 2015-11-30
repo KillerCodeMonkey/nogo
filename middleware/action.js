@@ -117,10 +117,7 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
                     });
                 });
             })
-            .catch(function (err) {
-                console.log(err);
-                next(err);
-            });
+            .catch(next);
     };
 
 module.exports = middleware;
