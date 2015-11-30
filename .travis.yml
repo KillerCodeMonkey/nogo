@@ -1,7 +1,7 @@
 language: node_js
 services: mongodb
 node_js:
-  - "0.12.7"
+  - "4.2.2"
 before_install: npm install -g grunt-cli
 install: npm install
 before_script:

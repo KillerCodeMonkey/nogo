@@ -1,10 +1,6 @@
-define([
-    'util/modelEndpointHandler',
-    'util/helper'
-], function (modelEndpointHandler, helper) {
-    'use strict';
-
-    return function (req, res, next) {
+var modelEndpointHandler = require('util/modelEndpointHandler'),
+    helper = require('util/helper'),
+    middleware = function (req, res, next) {
         if (req.customData && req.customData.action) {
             var filteredRequest = {},
                 action = req.customData.action;
@@ -27,16 +23,24 @@ define([
             if (action.file) {
                 filteredRequest.originalRequest = req;
             }
-            if (req.agenda) {
-                filteredRequest.agenda = req.agenda;
-            }
             if (action.pager) {
                 filteredRequest.pager = helper.setPager(req.query);
             }
 
-            return modelEndpointHandler.initDb(filteredRequest, res, action.models, action.exec);
+            return modelEndpointHandler.load().then(function () {
+                var models = modelEndpointHandler.initDb(filteredRequest, action.models);
+                models.push(next);
+                models.unshift(res);
+                models.unshift(filteredRequest);
+                try {
+                    action.exec.apply(undefined, models);
+                } catch (e) {
+                    next(e);
+                }
+            }, next);
         }
 
         next();
     };
-});
+
+module.exports = middleware;

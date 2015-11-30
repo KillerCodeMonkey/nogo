@@ -1,17 +1,13 @@
-define([
-    'nodemailer',
-    'nodemailer-smtp-transport',
-    'config/smtp',
-    'bluebird',
-    'path',
-    'module',
-    'email-templates',
-    'fs',
-    'appConfig'
-], function (nodemailer, smtpTransport, smtpConfig, Promise, path, module, emailTemplates, fs, appConfig) {
-    'use strict';
-
-    var templateDir = path.resolve(path.dirname(module.uri), '..', 'templates'),
+function buildMailer() {
+    var nodemailer = require('nodemailer'),
+        smtpTransport = require('nodemailer-smtp-transport'),
+        smtpConfig = require('config/smtp'),
+        Promise = require('bluebird'),
+        path = require('path'),
+        emailTemplates = require('email-templates'),
+        fs = require('fs'),
+        appConfig = require('config/app'),
+        templateDir = path.resolve(process.cwd(), 'templates'),
         config = {},
         transport;
 
@@ -19,13 +15,12 @@ define([
         return new Promise(function (resolve, reject) {
             fs.exists(templateDir + '/' + templateName + '/translations.js', function (exists) {
                 if (exists) {
-                    require(['templates/' + templateName + '/translations'], function (fileContent) {
-                        if (fileContent[language]) {
-                            params.dict = fileContent[language];
-                            return resolve();
-                        }
-                        reject();
-                    });
+                    var fileContent = require(templateDir + '/' + templateName + '/translations');
+                    if (fileContent[language]) {
+                        params.dict = fileContent[language];
+                        return resolve();
+                    }
+                    reject();
                 } else {
                     reject();
                 }
@@ -116,6 +111,6 @@ define([
             cb('missing_translations');
         });
     };
-
     return Mail;
-});
+}
+module.exports = buildMailer();

@@ -1,15 +1,9 @@
-/*global define, setTimeout*/
-/*jslint node:true, vars:true,nomen:true*/
-define([
-    'bluebird',
-    'mongoose',
-    'databaseConfig',
-    'util/modelEndpointHandler'
-], function (Promise, mongoose, databaseConfig, meHandler) {
-    'use strict';
-    var connection;
-
-    return function () {
+var connection,
+    Promise = require('bluebird'),
+    mongoose = require('mongoose'),
+    databaseConfig = require('config/database'),
+    meHandler = require('meHandler'),
+    demoContent = function () {
         var tasks = [];
 
         // DB connection
@@ -73,4 +67,4 @@ define([
             });
         });
     };
-});
+module.exports = demoContent();
