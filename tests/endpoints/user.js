@@ -231,7 +231,7 @@ describe('user model', function () {
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
-                    expect(data.entries.length).to.be(3);
+                    expect(data.entries.length).to.be(2);
                     done();
                 });
         });

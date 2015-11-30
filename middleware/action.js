@@ -12,22 +12,20 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
             if (!objectId) {
                 return cb(null);
             }
-            modelEndpointHandler.load().then(function () {
-                var models = modelEndpointHandler.initDb(req, [className]);
-                models[0].findById(objectId, function (err, object) {
-                    if (err) {
-                        return cb({
-                            error: err
-                        });
-                    }
-                    if (!object) {
-                        return cb({
-                            error: 'object_not_found'
-                        });
-                    }
-                    cb(null, object);
-                });
-            }, cb);
+            var models = modelEndpointHandler.initDb(req, [className]);
+            models[0].findById(objectId, function (err, object) {
+                if (err) {
+                    return cb({
+                        error: err
+                    });
+                }
+                if (!object) {
+                    return cb({
+                        error: 'object_not_found'
+                    });
+                }
+                cb(null, object);
+            });
         }
 
         function getAction(actionList, cb) {
