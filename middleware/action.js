@@ -1,10 +1,6 @@
-/* global define */
-define([
-    'util/modelEndpointHandler'
-], function (modelEndpointHandler) {
-    'use strict';
-
-    return function (req, res, next) {
+var modelEndpointHandler = require('util/modelEndpointHandler'),
+    RequestError = require('util/error').RequestError,
+    middleware = function (req, res, next) {
         var version = req.params.version,
             className = req.params.classname,
             actionName = req.params.action,
@@ -16,8 +12,9 @@ define([
             if (!objectId) {
                 return cb(null);
             }
-            modelEndpointHandler.initDb(req, res, [className], function (req2, res2, model) {
-                model.findById(objectId, function (err, object) {
+            modelEndpointHandler.load().then(function () {
+                var models = modelEndpointHandler.initDb(req, [className]);
+                models[0].findById(objectId, function (err, object) {
                     if (err) {
                         return cb({
                             error: err
@@ -30,7 +27,7 @@ define([
                     }
                     cb(null, object);
                 });
-            });
+            }, cb);
         }
 
         function getAction(actionList, cb) {
@@ -73,72 +70,56 @@ define([
         }
 
         // load models and endpoints
-        modelEndpointHandler.load().then(function (results) {
-            var models = results[0],
-                endpoints = results[1];
+        modelEndpointHandler
+            .load()
+            .then(function (results) {
+                var models = results[0],
+                    endpoints = results[1];
 
-            if (!version) {
-                return res.status(404).send({
-                    error: 'no_version'
-                });
-            }
-            if (!className) {
-                return res.status(404).send({
-                    error: 'no_classname'
-                });
-            }
-            if (!models[className]) {
-                return res.status(404).send({
-                    error: 'unknown_model',
-                    param: className
-                });
-            }
-            if (!endpoints[className]) {
-                return res.status(404).send({
-                    error: 'unknown_endpoint',
-                    param: className
-                });
-            }
-            // load model and endpoint by class
-            endpoint = endpoints[className];
-
-            if (!endpoint[version]) {
-                return res.status(404).send({
-                    error: 'no_endpoints_for_version',
-                    param: version
-                });
-            }
-            if (!endpoint[version][method]) {
-                return res.status(404).send({
-                    error: 'no_endpoints_for_method',
-                    param: method
-                });
-            }
-
-            //  load all actions
-            var actionList = endpoint[version][method];
-
-            getAction(actionList, function (actionErr, action) {
-                if (actionErr) {
-                    return res.status(404).send(actionErr);
+                if (!version) {
+                    throw new RequestError('no_version', 404);
                 }
-                if (!req.customData) {
-                    req.customData = {};
+                if (!className) {
+                    throw new RequestError('no_classname', 404);
+                }
+                if (!models[className]) {
+                    throw new RequestError('unknown_model', 404, className);
+                }
+                if (!endpoints[className]) {
+                    throw new RequestError('unknown_endpoint', 404, className);
+                }
+                // load model and endpoint by class
+                endpoint = endpoints[className];
+
+                if (!endpoint[version]) {
+                    throw new RequestError('no_endpoints_for_version', 404, version);
+                }
+                if (!endpoint[version][method]) {
+                    throw new RequestError('no_endpoints_for_method', 404, method);
                 }
 
-                req.customData.action = action;
-                loadObject(function (err, object) {
-                    if (err) {
-                        return res.status(404).send(err);
+                //  load all actions
+                var actionList = endpoint[version][method];
+
+                getAction(actionList, function (actionErr, action) {
+                    if (actionErr) {
+                        throw new RequestError(actionErr, 404);
                     }
-                    req.customData.object = object;
-                    next();
+                    if (!req.customData) {
+                        req.customData = {};
+                    }
+
+                    req.customData.action = action;
+                    loadObject(function (err, object) {
+                        if (err) {
+                            throw new RequestError(err, 404);
+                        }
+                        req.customData.object = object;
+                        next();
+                    });
                 });
-            });
-        }, function () {
-            res.status(500).send({
-                error: 'model_endpoint_loading_failed'
-            });
-        });
+            })
+            .catch(next);
     };
-});
+
+module.exports = middleware;

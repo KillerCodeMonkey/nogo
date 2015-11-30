@@ -1,9 +1,8 @@
 /*globals before, require, after, it, describe */
 var request = require('supertest'),
     expect = require('expect.js'),
-    require = require('../../config/require'),
     testHandler = require('util/testHandler'),
-    app,
+    app = require('appServer'),
     restURL,
     user;
 
@@ -12,38 +11,33 @@ describe('Authentication model', function () {
     'use strict';
     before(function (done) {
         this.timeout(8000);
-        require(['appServer'], function (appServer) {
-            appServer.then(function (server) {
-                app = server;
-                testHandler.init(app, 'authentication').then(function () {
-                    restURL = testHandler.getUrl();
-                    request(app)
-                        .post('/api/v1/user')
-                        .send({
-                            'email': 'test@test.test',
-                            'firstName': 'Senf',
-                            'lastName': 'Mann',
-                            'password': 'test1234'
-                        })
-                        .expect(200)
-                        .end(function (err, res) {
-                            if (err) {
-                                return done(err);
-                            }
+        testHandler.init(app, 'authentication').then(function () {
+            restURL = testHandler.getUrl();
+            request(app)
+                .post('/api/v1/user')
+                .send({
+                    'email': 'test@test.test',
+                    'firstName': 'Senf',
+                    'lastName': 'Mann',
+                    'password': 'test1234'
+                })
+                .expect(200)
+                .end(function (err, res) {
+                    if (err) {
+                        return done(err);
+                    }
 
-                            var data = res.body;
+                    var data = res.body;
 
-                            expect(data).not.to.be(null);
-                            expect(data).to.be.an('object');
-                            expect(data.email).to.be('test@test.test');
-                            expect(data.password).not.to.be(undefined);
-                            expect(data.password).to.be.a('string');
-                            user = data;
-                            done();
-                        });
-                }, done);
-            }, done);
-        });
+                    expect(data).not.to.be(null);
+                    expect(data).to.be.an('object');
+                    expect(data.email).to.be('test@test.test');
+                    expect(data.password).not.to.be(undefined);
+                    expect(data.password).to.be.a('string');
+                    user = data;
+                    done();
+                });
+        }, done);
     });
 
     after(function (done) {

@@ -1,15 +1,11 @@
-define(function () {
-    'use strict';
-
-    return {
-        port: '8888',
-        host: 'http://localhost',
-        secret: 'z}#{T=s40-;{Z?qnK.)7üflZ{O?}I=b-}ö;%:__H',
-        tokenExpiresInSeconds: 120 * 60,
-        permissions: {
-            'admin': 'admin',
-            'user': 'user' // enduser = user
-        },
-        defaultLanguage: 'de'
-    };
-});
+module.exports = {
+    port: '8888',
+    host: 'http://localhost',
+    secret: 'z}#{T=s40-;{Z?qnK.)7üflZ{O?}I=b-}ö;%:__H',
+    tokenExpiresInSeconds: 120 * 60,
+    permissions: {
+        'admin': 'admin',
+        'user': 'user' // enduser = user
+    },
+    defaultLanguage: 'de'
+};

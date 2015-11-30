@@ -1,16 +1,10 @@
-/*global define*/
-/*jslint vars:true,nomen:true*/
-define([
-    'bluebird',
-    'appConfig',
-    'databaseConfig',
-    'fs',
-    'mongoose',
-    'util/modelEndpointHandler'
-], function (Promise, appConfig, databaseConfig, fs, mongoose, meHandler) {
-    'use strict';
-
-    var System = function () {
+var Promise = require('bluebird'),
+    appConfig = require('config/app'),
+    databaseConfig = require('config/database'),
+    fs = require('fs'),
+    mongoose = require('mongoose'),
+    meHandler = require('util/modelEndpointHandler'),
+    System = function () {
 
         this.deleteDBFilesRecursive = function (path, fileName) {
             var self = this;
@@ -102,5 +96,4 @@ define([
         };
     };
 
-    return new System();
-});
+module.exports = new System();

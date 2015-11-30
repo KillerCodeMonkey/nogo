@@ -2,37 +2,37 @@
 /** @file appServer.js Endpoints for app request
  *  @module Other
  * */
-define([
-    'path',
-    'bluebird',
-    'express',
-    'body-parser',
-    'method-override',
-    'errorhandler',
-    'mongoose',
-    'connect-busboy',
-    'appConfig',
-    'databaseConfig',
-    'middleware/action',
-    'middleware/validation',
-    'middleware/permission',
-    'middleware/execute',
-    'middleware/authentication',
-    'cron',
-    'cors'
-], /** @lends Other */ function (path, Promise, express, bodyParser, methodOverride, errorHandler, mongoose, busboy, appConfig, databaseConfig, action, validation, permission, execute, authentication, agenda, cors) {
-    'use strict';
-
-    var app = express(),
+require('app-module-path').addPath(__dirname);
+function startAppServer() {
+    var path = require('path'),
+        express = require('express'),
+        bodyParser = require('body-parser'),
+        methodOverride = require('method-override'),
+        errorHandler = require('errorhandler'),
+        busboy = require('connect-busboy'),
+        mongoose = require('mongoose'),
+        appConfig = require('config/app'),
+        databaseConfig = require('config/database'),
+        action = require('middleware/action'),
+        validation = require('middleware/validation'),
+        permission = require('middleware/permission'),
+        execute = require('middleware/execute'),
+        error = require('middleware/error'),
+        authentication = require('middleware/authentication'),
+        cors = require('cors'),
+        app = express(),
         server,
         // DB connection
         connection = mongoose.createConnection(databaseConfig.host, databaseConfig.dbname, databaseConfig.port);
+    // use unified promises through the app.
+    mongoose.Promise = require('bluebird');
 
     connection.on('open', function () {
         console.info('DB connected');
     });
 
     connection.on('error', function () {
+        console.log(arguments);
         console.error('DB exit!');
     });
 
@@ -65,11 +65,9 @@ define([
     app.use(errorHandler({ dumpExceptions: true, showStack: true })); // error stacks
     app.use(function (req, res, next) {
         req.db = connection; // set db on req
-        req.agenda = agenda; // put cron agenda on req
         next();
     });
     app.use(authentication); // use authentication middleware
-
     // Launch server
     server = app.listen(appConfig.port, function () {
         console.info('Listening on port %d', server.address().port);
@@ -98,22 +96,19 @@ define([
         var resAppConfig = JSON.parse(JSON.stringify(appConfig));
 
         delete resAppConfig.secret;
-        delete resAppConfig.permissions.sysadmin;
-        delete resAppConfig.permissions.user;
-        delete resAppConfig.permissions.moderator;
-        resAppConfig.version = 'v1';
-
+        delete resAppConfig.permissions;
         res.send(resAppConfig);
     });
 
     // set middlewares
-    //app.param(['version', 'classname', 'action', 'objectid'], action);
+    // app.param(['version', 'classname', 'action', 'objectid'], action);
     // set generic provided api class urls
     app.route('/api/:version/:classname/:action?').all(action, validation, permission, execute);
     // set generic provided api object urls
     app.route('/api/:version/:classname/id/:objectid/:action?').all(action, validation, permission, execute);
+    // add generic error middleware
+    app.use(error);
+    return server;
+}
 
-    return new Promise(function (resolve) {
-        return resolve(server);
-    });
-});
+module.exports = startAppServer();

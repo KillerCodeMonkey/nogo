@@ -1,9 +1,8 @@
 /*globals before, after, it, describe, process, require */
 var request = require('supertest'),
     expect = require('expect.js'),
-    require = require('../../config/require'),
     testHandler = require('util/testHandler'),
-    app,
+    app = require('appServer'),
     user,
     admin,
     testuser,
@@ -13,21 +12,16 @@ describe('user model', function () {
     'use strict';
     this.timeout(5000);
     before(function (done) {
-        require(['appServer'], function (appServer) {
-            appServer.then(function (server) {
-                app = server;
-                testHandler.init(app, 'user').then(function () {
-                    restURL = testHandler.getUrl();
-                    admin = testHandler.getAdmin();
-                    testHandler.register('lasmaranda.densivilla@schnitten.sx', 'Lassmaranda', 'Dennsiewillja', 'kicken').then(function (newUser) {
-                        testuser = newUser;
-                        testHandler.login(testuser.email, testuser.password, false, testuser).then(function () {
-                            done();
-                        }, done);
-                    }, done);
+        testHandler.init(app, 'user').then(function () {
+            restURL = testHandler.getUrl();
+            admin = testHandler.getAdmin();
+            testHandler.register('lasmaranda.densivilla@schnitten.sx', 'Lassmaranda', 'Dennsiewillja', 'kicken').then(function (newUser) {
+                testuser = newUser;
+                testHandler.login(testuser.email, testuser.password, false, testuser).then(function () {
+                    done();
                 }, done);
             }, done);
-        });
+        }, done);
     });
 
     after(function (done) {

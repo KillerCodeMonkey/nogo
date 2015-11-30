@@ -1,11 +1,12 @@
 /*global module, grunt, require:true*/
 /*jslint vars:true*/
 /* istanbul ignore next */
+require('app-module-path').addPath(__dirname);
+/* istanbul ignore next */
 module.exports = function (grunt) {
     'use strict';
 
-    require = require('./config/require');
-    var dbconfig = require('databaseConfig'),
+    var dbconfig = require('config/database'),
         System = require('util/system');
 
     var DBPATH = dbconfig.dbpath;
