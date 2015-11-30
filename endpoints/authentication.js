@@ -208,7 +208,7 @@ rest.login = {
                 }
 
                 loginUser = user;
-
+console.log(loginUser, user);
                 // remove other authentications of uuid
                 if (req.params.uuid) {
                     tasks.push(removeAuthenticationByUUID(req.params.uuid, Authentication));
@@ -357,6 +357,7 @@ rest.refresh = {
                 }
 
                 oldAuth = authentication;
+                console.log(oldAuth, authentication);
                 return User
                     .findById(authentication.user)
                     .exec();
