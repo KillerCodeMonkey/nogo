@@ -9,4 +9,4 @@ before_install: npm install -g grunt-cli
 install: npm install
 before_script:
   - grunt exec:install
-script: grunt tests
+script: grunt exec:coverage
