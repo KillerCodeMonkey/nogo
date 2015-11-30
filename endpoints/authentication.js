@@ -1,4 +1,5 @@
 var rest = {},
+    RequestError = require('util/error').RequestError,
     jwt = require('jsonwebtoken'),
     crypto = require('crypto'),
     appConfig = require('config/app'),
@@ -178,10 +179,7 @@ rest.login = {
             loginUser;
 
         if (req.user) {
-            return next({
-                status: 400,
-                error: 'already_logged_in'
-            });
+            throw new RequestError('already_logged_in', 400);
         }
 
         User
@@ -195,18 +193,10 @@ rest.login = {
             .exec()
             .then(function (user) {
                 if (!user) {
-                    return next({
-                        status: 400,
-                        error: 'user_not_exists'
-                    });
+                    throw new RequestError('user_not_exists', 400);
                 }
                 if (!user.checkPassword(req.params.password)) {
-                    console.log('error');
-                    return next({
-                        status: 400,
-                        error: 'invalid_login_password_combination'
-                    });
-                    console.log('but');
+                    throw new RequestError('invalid_login_password_combination', 400);
                 }
 
                 loginUser = user;
@@ -347,15 +337,10 @@ rest.refresh = {
             .exec()
             .then(function (authentication) {
                 if (!authentication) {
-                    return next({
-                        status: 403
-                    });
+                    throw new RequestError(null, 404);
                 }
                 if (authentication.refreshToken !== params.refreshToken) {
-                    return next({
-                        status: 403,
-                        error: 'invalid_refresh_token'
-                    });
+                    throw new RequestError('invalid_refresh_token', 403);
                 }
 
                 oldAuth = authentication;
@@ -365,10 +350,7 @@ rest.refresh = {
             })
             .then(function (user) {
                 if (!user) {
-                    return next({
-                        status: 400,
-                        error: 'user_not_found'
-                    });
+                    throw new RequestError('user_not_found', 400);
                 }
 
                 loginUser = user;
@@ -419,9 +401,7 @@ rest.logout = {
             .exec()
             .then(function (authentication) {
                 if (!authentication) {
-                    return next({
-                        status: 403
-                    });
+                    throw new RequestError(null, 403);
                 }
                 return authentication
                     .remove();

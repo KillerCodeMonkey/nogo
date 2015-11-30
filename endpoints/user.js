@@ -3,6 +3,7 @@ var rest = {},
         'username',
         '_id'
     ],
+    RequestError = require('util/error').RequestError;
     appConfig = require('config/app'),
     Promise = require('bluebird'),
     _ = require('underscore'),
@@ -197,10 +198,7 @@ rest.getOne = {
     models: [],
     exec: function (req, res, next) {
         if (req.object.permissions.indexOf(appConfig.permissions.admin) !== -1) {
-            return next({
-                status: 403,
-                error: 'permission_denied'
-            });
+            throw new RequestError(null, 303);
         }
         var user = req.object.toObject(true);
 
@@ -334,11 +332,7 @@ rest.check = {
     exec: function (req, res, User, next) {
         var selector = {};
         if (!req.params.email && !req.params.username) {
-            return next({
-                status: 400,
-                error: 'missing_parameter',
-                param: 'email'
-            });
+            throw new RequestError('missing_parameter', 400, 'email');
         }
         if (req.params.email) {
             selector.email = req.params.email;
@@ -430,10 +424,7 @@ rest.sendPassword = {
     models: ['user'],
     exec: function (req, res, User, next) {
         if (req.user) {
-            return next({
-                status: 400,
-                error: 'user_already_loggedin'
-            });
+            throw new RequestError('already_logged_in', 400);
         }
         User
             .findOne({
@@ -442,10 +433,7 @@ rest.sendPassword = {
             .exec()
             .then(function (user) {
                 if (!user) {
-                    return next({
-                        status: 404,
-                        error: 'user_not_found'
-                    });
+                    throw new RequestError('user_not_found', 404);
                 }
                 var password = helper.generateRandomString();
 
@@ -573,10 +561,7 @@ rest.register = {
             user;
 
         if (req.user) {
-            return next({
-                status: 400,
-                error: 'already_logged_in'
-            });
+            throw new RequestError('already_logged_in', 400);
         }
 
         User
@@ -586,10 +571,7 @@ rest.register = {
             .exec()
             .then(function (existingUser) {
                 if (existingUser) {
-                    return next({
-                        status: 400,
-                        error: 'email_exists'
-                    });
+                    throw new RequestError('email_exists', 400);
                 }
 
                 user = new User({
@@ -748,11 +730,7 @@ rest.update = {
 
         // check if old password was sent if new email or/and new password
         if ((params.email || params.newPassword) && !params.password) {
-            return next({
-                status: 400,
-                error: 'missing_parameter',
-                param: 'password'
-            });
+            throw new RequestError('missing_parameter', 400, 'password');
         }
         if (params.email === user.email) {
             delete params.email;
@@ -764,10 +742,7 @@ rest.update = {
         // if old password is wrong -> return
         if (params.email || params.newPassword) {
             if (!params.password || !user.checkPassword(params.password)) {
-                return next({
-                    status: 400,
-                    error: 'invalid_password'
-                });
+                throw new RequestError('invalid_password', 400, 'password');
             }
         }
 
@@ -781,10 +756,7 @@ rest.update = {
             .all(tasks)
             .then(function (results) {
                 if (tasks.length && results && results.length && results[0]) {
-                    return next({
-                        status: 400,
-                        error: 'email_exists'
-                    });
+                    throw new RequestError('email_exists', 400);
                 }
                 tasks.length = 0;
 
@@ -798,10 +770,7 @@ rest.update = {
             })
             .then(function (userResult) {
                 if (tasks.length && userResult && userResult.length && userResult[0]) {
-                    return next({
-                        status: 400,
-                        error: 'username_exists'
-                    });
+                    throw new RequestError('username_exists', 400);
                 }
 
                 // set password to new one
