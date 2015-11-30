@@ -9,6 +9,6 @@ before_install: npm install -g grunt-cli codeclimate-test-reporter
 install: npm install
 before_script:
   - grunt exec:install
-script: npn run coverage
+script: npm run coverage
 after_success:
   - "cat ./coverage/lcov.info | codeclimate"
