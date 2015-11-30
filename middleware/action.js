@@ -101,7 +101,7 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
 
                 getAction(actionList, function (actionErr, action) {
                     if (actionErr) {
-                        throw new RequestError(actionErr, 404);
+                        return next(new RequestError(actionErr, 404));
                     }
                     if (!req.customData) {
                         req.customData = {};
@@ -110,7 +110,7 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
                     req.customData.action = action;
                     loadObject(function (err, object) {
                         if (err) {
-                            throw new RequestError(err, 404);
+                            return next(new RequestError(err, 404));
                         }
                         req.customData.object = object;
                         next();
