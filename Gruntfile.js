@@ -54,7 +54,7 @@ module.exports = function (grunt) {
                 stderr: true
             },
             coverage: {
-                command: 'node_modules/.bin/istanbul cover grunt tests --hook-run-in-context'
+                command: 'node_modules/.bin/istanbul cover --report lcovonly grunt tests --hook-run-in-context'
             },
             repair: {
                 command: [
