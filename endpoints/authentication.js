@@ -201,14 +201,16 @@ rest.login = {
                     });
                 }
                 if (!user.checkPassword(req.params.password)) {
+                    console.log('error');
                     return next({
                         status: 400,
                         error: 'invalid_login_password_combination'
                     });
+                    console.log('but');
                 }
 
                 loginUser = user;
-console.log(loginUser, user);
+
                 // remove other authentications of uuid
                 if (req.params.uuid) {
                     tasks.push(removeAuthenticationByUUID(req.params.uuid, Authentication));
@@ -357,7 +359,6 @@ rest.refresh = {
                 }
 
                 oldAuth = authentication;
-                console.log(oldAuth, authentication);
                 return User
                     .findById(authentication.user)
                     .exec();
