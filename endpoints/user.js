@@ -423,6 +423,7 @@ rest.sendPassword = {
     },
     models: ['user'],
     exec: function (req, res, User, next) {
+        var password;
         if (req.user) {
             throw new RequestError('already_logged_in', 400);
         }
@@ -435,7 +436,7 @@ rest.sendPassword = {
                 if (!user) {
                     throw new RequestError('user_not_found', 404);
                 }
-                var password = helper.generateRandomString();
+                password = helper.generateRandomString();
 
                 user.password = password;
                 user.isTempPassword = true;
@@ -445,13 +446,13 @@ rest.sendPassword = {
             .then(function (user) {
                 var object = user.toObject();
                 if (process.env.NODE_ENV !== 'production') {
-                    object.password = user.password;
+                    object.password = password;
                 }
                 stripUser(object);
 
                 var Mail = new Mailer();
                 Mail.send(user.email, 'passwordRecovery', null, {
-                    password: user.password,
+                    password: password,
                     user: user.username
                 }, function (mailErr) {
                     if (mailErr) {

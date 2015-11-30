@@ -101,7 +101,7 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
                 //  load all actions
                 var actionList = endpoint[version][method];
 
-                getAction(actionList, function (actionErr, action) {
+                return getAction(actionList, function (actionErr, action) {
                     if (actionErr) {
                         throw new RequestError(actionErr, 404);
                     }
@@ -110,7 +110,7 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
                     }
 
                     req.customData.action = action;
-                    loadObject(function (err, object) {
+                    return loadObject(function (err, object) {
                         if (err) {
                             throw new RequestError(err, 404);
                         }

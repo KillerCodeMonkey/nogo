@@ -122,7 +122,7 @@ describe('user model', function () {
                     expect(data).to.be.an('object');
                     expect(data.error).not.to.be(null);
                     expect(data.error).to.be.a('string');
-                    expect(data.error).to.be('invalid_structure');
+                    expect(data.error).to.be('missing_parameter');
                     expect(data.param).to.be('email');
 
                     done();
@@ -231,7 +231,7 @@ describe('user model', function () {
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
-                    expect(data.entries.length).to.be(2);
+                    expect(data.entries.length).to.be(3);
                     done();
                 });
         });
@@ -435,7 +435,7 @@ describe('user model', function () {
                     expect(data).to.be.an('object');
                     expect(data.error).not.to.be(null);
                     expect(data.error).to.be.a('string');
-                    expect(data.error).to.be('user_already_loggedin');
+                    expect(data.error).to.be('already_logged_in');
 
                     done();
                 });
