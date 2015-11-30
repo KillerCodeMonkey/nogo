@@ -358,11 +358,9 @@ rest.refresh = {
                     .remove();
             })
             .then(function () {
-                console.log(loginUser, oldAuth);
-                generateAuthentication(loginUser, Authentication, oldAuth.token, oldAuth.platform, oldAuth.uuid);
+                return generateAuthentication(loginUser, Authentication, oldAuth.token, oldAuth.platform, oldAuth.uuid);
             })
             .then(function (userData) {
-                console.log(userData);
                 res.send(userData);
             })
             .catch(next);
