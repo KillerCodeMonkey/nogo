@@ -5,7 +5,7 @@ addons:
 services: mongodb
 node_js:
   - "4.2.2"
-before_install: npm run preinstall
+before_install: npm preinstall
 install: npm install
 before_script:
   - grunt exec:install
