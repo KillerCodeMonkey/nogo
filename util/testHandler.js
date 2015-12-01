@@ -1,3 +1,4 @@
+require('app-module-path').addPath(__dirname);
 var url,
     app,
     user,
