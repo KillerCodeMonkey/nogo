@@ -1,7 +1,4 @@
 language: node_js
-addons:
-    code_climate:
-        repo_token:
 services: mongodb
 node_js:
   - "4.2.2"
