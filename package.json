@@ -65,8 +65,5 @@
         "url" : "https://host/api/v1",
         "apiSampleRequest": "on",
         "sampleUrl": "localhost:8000/api/v1"
-    },
-    "scripts": {
-        "coverage": "./node_modules/.bin/istanbul cover --report lcovonly grunt tests"
     }
 }
