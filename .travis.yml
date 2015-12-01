@@ -11,4 +11,4 @@ before_script:
   - grunt exec:install
 script: npm run coverage
 after_success:
-  - "cat ./coverage/lcov.info | codeclimate"
+  - codeclimate-test-reporter < coverage/lcov.info
