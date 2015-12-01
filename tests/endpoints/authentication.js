@@ -1,4 +1,4 @@
-require('app-module-path').addPath(__dirname);
+require('app-module-path').addPath(process.cwd());
 var request = require('supertest'),
     expect = require('expect.js'),
     testHandler = require('util/testHandler'),
