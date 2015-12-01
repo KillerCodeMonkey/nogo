@@ -7,6 +7,7 @@ var jwt = require('jsonwebtoken'),
             parts,
             scheme,
             User,
+            currentAuthentication,
             Authentication,
             credentials;
 
@@ -52,6 +53,9 @@ var jwt = require('jsonwebtoken'),
                         if (!authentication) {
                             throw new RequestError('invalid_authorization', 403);
                         }
+                        
+                        currentAuthentication = authentication;
+                        
                         return User
                             .findById(decoded.id)
                             .exec();
@@ -66,6 +70,7 @@ var jwt = require('jsonwebtoken'),
                         }
                         req.customData.user = user;
                         req.customData.accessToken = token;
+                        req.customData.authentication = currentAuthentication;
                         return next();
                     })
                     .catch(next);
