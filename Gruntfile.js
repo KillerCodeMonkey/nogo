@@ -53,6 +53,9 @@ module.exports = function (grunt) {
                 stdout: true,
                 stderr: true
             },
+            coverage: {
+                command: 'node_modules/.bin/istanbul cover --report lcovonly grunt tests --hook-run-in-context'
+            },
             repair: {
                 command: [
                     'grunt exec:killDB',

@@ -1,4 +1,4 @@
-/*globals before, after, it, describe, process, require */
+require('app-module-path').addPath(process.cwd());
 var request = require('supertest'),
     expect = require('expect.js'),
     testHandler = require('util/testHandler'),

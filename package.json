@@ -20,7 +20,9 @@
         "jsonwebtoken"
     ],
     "scripts": {
-        "preinstall": ["npm install -g jsdoc", "npm install -g grunt-cli", "npm install -g pm2@0.14.5"]
+        "preinstall": ["npm install -g grunt-cli", "npm install -g pm2@0.14.5"],
+        "test": "node_modules/.bin/mocha tests/*",
+        "coverage": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha tests/*"
     },
     "dependencies": {
         "app-module-path": "1.0.4",
@@ -52,7 +54,8 @@
         "supertest": "1.1.0",
         "istanbul": "0.4.0",
         "grunt-mocha-test": "0.12.7",
-        "grunt-apidoc": "0.10.1"
+        "grunt-apidoc": "0.10.1",
+        "mocha": "2.3.4"
     },
     "engines": {
         "node":  ">= 0.12.8"

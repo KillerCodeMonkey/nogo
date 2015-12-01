@@ -1,3 +1,4 @@
+require('app-module-path').addPath(process.cwd());
 var url,
     app,
     user,

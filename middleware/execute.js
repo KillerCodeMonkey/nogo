@@ -7,9 +7,8 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
 
             if (req.customData.user) {
                 filteredRequest.user = req.customData.user;
-            }
-            if (req.customData.accessToken) {
                 filteredRequest.accessToken = req.customData.accessToken;
+                filteredRequest.authentication = req.customData.authentication;
             }
             if (req.db) {
                 filteredRequest.db = req.db;
