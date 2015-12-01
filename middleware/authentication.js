@@ -7,6 +7,7 @@ var jwt = require('jsonwebtoken'),
             parts,
             scheme,
             User,
+            currentAuthentication,
             Authentication,
             credentials;
 
@@ -31,9 +32,9 @@ var jwt = require('jsonwebtoken'),
             jwt.verify(token, appConfig.secret, function (err, decoded) {
                 if (err) {
                     if (err.name === 'TokenExpiredError') {
-                        throw new RequestError(null, 401);
+                        return next(new RequestError(null, 401));
                     }
-                    throw new RequestError(err);
+                    return next(new RequestError(err));
                 }
 
                 return modelEndpointHandler.load()
@@ -52,6 +53,9 @@ var jwt = require('jsonwebtoken'),
                         if (!authentication) {
                             throw new RequestError('invalid_authorization', 403);
                         }
+                        
+                        currentAuthentication = authentication;
+                        
                         return User
                             .findById(decoded.id)
                             .exec();
@@ -66,6 +70,7 @@ var jwt = require('jsonwebtoken'),
                         }
                         req.customData.user = user;
                         req.customData.accessToken = token;
+                        req.customData.authentication = currentAuthentication;
                         return next();
                     })
                     .catch(next);
