@@ -31,9 +31,9 @@ var jwt = require('jsonwebtoken'),
             jwt.verify(token, appConfig.secret, function (err, decoded) {
                 if (err) {
                     if (err.name === 'TokenExpiredError') {
-                        throw new RequestError(null, 401);
+                        return next(new RequestError(null, 401));
                     }
-                    throw new RequestError(err);
+                    return next(new RequestError(err));
                 }
 
                 return modelEndpointHandler.load()
