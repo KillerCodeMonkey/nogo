@@ -6,31 +6,18 @@ require('app-module-path').addPath(__dirname);
 module.exports = function (grunt) {
     'use strict';
 
-    var dbconfig = require('config/database'),
-        System = require('util/system');
+    var dbconfig = require('config/database');
 
     var DBPATH = dbconfig.dbpath;
     grunt.file.mkdir(DBPATH);
 
     var db = grunt.option('target');
 
-    var reporter = grunt.option('reporter');
-
-    grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-exec');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-apidoc');
 
     grunt.initConfig({
-        mochaTest: {
-            test: {
-                options: {
-                    timeout: 10000,
-                    reporter: reporter || 'spec'
-                },
-                src: ['tests/*/*.js']
-            }
-        },
 
         apidoc: {
             myapp: {
@@ -52,9 +39,6 @@ module.exports = function (grunt) {
                 command: 'mongod -v --port=' + dbconfig.port + ' --storageEngine wiredTiger --dbpath=' + DBPATH + ' --logpath=' + DBPATH + '/server1.log --logappend --journal --smallfiles&',
                 stdout: true,
                 stderr: true
-            },
-            coverage: {
-                command: 'node_modules/.bin/istanbul cover --report lcovonly grunt tests --hook-run-in-context'
             },
             repair: {
                 command: [
@@ -137,25 +121,8 @@ module.exports = function (grunt) {
 
             monitorAllPM2: {
                 command: 'pm2 monit'
-            },
-
-            doc: {
-                command: [
-                    'rm -rf docs',
-                    'jsdoc appServer.js endpoints/*.js -d docs'
-                ].join('&&')
             }
         },
-
-        jsdoc: {
-            dist: {
-                src: ['endpoints/*.js'],
-                options: {
-                    destination: 'doc'
-                }
-            }
-        },
-
         clean: {
             db: ['static/' + db],
             staticPublic: ['static/public'],
@@ -164,61 +131,13 @@ module.exports = function (grunt) {
         }
     });
 
-    /*jslint regexp:true*/
-    var buildParams = function (flags) {
-        var params = {};
-
-        flags.forEach(function (flag) {
-            var truematch = /--([^\s=]+)$/.exec(flag);
-
-            if (truematch) {
-                params[truematch[1]] = true;
-                return;
-            }
-
-            var nomatch = /--no-([^\s=]+)$/.exec(flag);
-
-            if (nomatch) {
-                params[nomatch[1]] = false;
-                return;
-            }
-
-            var match = /--([^\s=]+)=([^\s=]+)/.exec(flag);
-            if (match) {
-                params[match[1]] = match[2];
-            }
-        });
-
-        return params;
-    };
-    /*jslint regexp:false*/
-
     var reinstall = function () {
-        var flags = grunt.option.flags();
-        var params = buildParams(flags);
-
         var done = this.async();
         var init = require('util/democontent');
 
-        init(params).then(function () {
-            done();
-        }, grunt.log.error);
+        init().then(done, grunt.log.error);
     };
 
-    var createSystem = function () {
-        var flags = grunt.option.flags();
-        var params = buildParams(flags);
-
-        params.username = params.username || 'test';
-        params.password = params.password || '1234';
-
-        var done = this.async();
-        System.createSystem(params.username, params.password).then(function () {
-            done();
-        }, grunt.log.error);
-    };
-
-    grunt.registerTask('initSystem', createSystem);
     grunt.registerTask('createcontent', reinstall);
     grunt.registerTask('reinstall', ['clean:staticPublic', 'createcontent']);
     grunt.registerTask('start', ['exec:startNode']);
@@ -229,6 +148,5 @@ module.exports = function (grunt) {
     grunt.registerTask('restart', ['exec:restartPM2']);
     grunt.registerTask('monit', ['exec:monitorAPIPM2']);
     grunt.registerTask('monitAll', ['exec:monitorAllPM2']);
-    grunt.registerTask('tests', ['mochaTest']);
     grunt.registerTask('default', 'exec:startPM2Cron');
 };
