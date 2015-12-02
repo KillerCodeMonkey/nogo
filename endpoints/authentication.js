@@ -1,9 +1,9 @@
 var rest = {},
-    RequestError = require('util/error').RequestError,
+    RequestError = require('../util/error').RequestError,
     jwt = require('jsonwebtoken'),
     crypto = require('crypto'),
-    appConfig = require('config/app'),
-    dbConfig = require('config/database'),
+    appConfig = require('../config/app'),
+    dbConfig = require('../config/database'),
     Promise = require('bluebird');
 
 function removeAuthenticationByUUID(uuid, Authentication) {

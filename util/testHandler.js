@@ -1,14 +1,13 @@
-require('app-module-path').addPath(process.cwd());
 var url,
     app,
     user,
     admin,
     connection,
-    meHandler = require('util/modelEndpointHandler'),
+    meHandler = require('./modelEndpointHandler'),
     request = require('supertest'),
-    dbConfig = require('config/database'),
+    dbConfig = require('../config/database'),
     Promise = require('bluebird'),
-    helper = require('util/helper'),
+    helper = require('./helper'),
     mongoose = require('mongoose');
 
 function login(email, password, isAdmin, loginUser) {

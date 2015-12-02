@@ -1,4 +1,4 @@
-var RequestError = require('util/error').RequestError,
+var RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
 
     function checkPermissions() {

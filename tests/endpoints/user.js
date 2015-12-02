@@ -1,8 +1,7 @@
-require('app-module-path').addPath(process.cwd());
 var request = require('supertest'),
     expect = require('expect.js'),
-    testHandler = require('util/testHandler'),
-    app = require('appServer'),
+    testHandler = require('../../util/testHandler'),
+    app = require('../../appServer'),
     user,
     admin,
     testuser,

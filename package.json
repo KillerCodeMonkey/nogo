@@ -25,7 +25,6 @@
         "coverage": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha tests/*"
     },
     "dependencies": {
-        "app-module-path": "1.0.4",
         "mongodb": "2.0.49",
         "requirejs": "2.1.22",
         "express": "4.13.3",
@@ -53,7 +52,7 @@
         "expect.js": "0.3.1",
         "supertest": "1.1.0",
         "istanbul": "0.4.0",
-        "grunt-mocha-test": "0.12.7",
+        "proxyquire": "1.7.3",
         "grunt-apidoc": "0.10.1",
         "mocha": "2.3.4"
     },

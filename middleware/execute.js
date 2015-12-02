@@ -1,5 +1,5 @@
-var modelEndpointHandler = require('util/modelEndpointHandler'),
-    helper = require('util/helper'),
+var modelEndpointHandler = require('../util/modelEndpointHandler'),
+    helper = require('../util/helper'),
     middleware = function (req, res, next) {
         if (req.customData && req.customData.action) {
             var filteredRequest = {},

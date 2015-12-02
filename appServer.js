@@ -1,8 +1,3 @@
-/* global console, define, process */
-/** @file appServer.js Endpoints for app request
- *  @module Other
- * */
-require('app-module-path').addPath(__dirname);
 function startAppServer() {
     var path = require('path'),
         express = require('express'),
@@ -11,14 +6,14 @@ function startAppServer() {
         errorHandler = require('errorhandler'),
         busboy = require('connect-busboy'),
         mongoose = require('mongoose'),
-        appConfig = require('config/app'),
-        databaseConfig = require('config/database'),
-        action = require('middleware/action'),
-        validation = require('middleware/validation'),
-        permission = require('middleware/permission'),
-        execute = require('middleware/execute'),
-        error = require('middleware/error'),
-        authentication = require('middleware/authentication'),
+        appConfig = require('./config/app'),
+        databaseConfig = require('./config/database'),
+        action = require('./middleware/action'),
+        validation = require('./middleware/validation'),
+        permission = require('./middleware/permission'),
+        execute = require('./middleware/execute'),
+        error = require('./middleware/error'),
+        authentication = require('./middleware/authentication'),
         cors = require('cors'),
         app = express(),
         server,

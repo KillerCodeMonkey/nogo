@@ -3,12 +3,12 @@ var rest = {},
         'username',
         '_id'
     ],
-    RequestError = require('util/error').RequestError;
-    appConfig = require('config/app'),
+    RequestError = require('../util/error').RequestError;
+    appConfig = require('../config/app'),
     Promise = require('bluebird'),
     _ = require('underscore'),
-    Mailer = require('util/mailer'),
-    helper = require('util/helper');
+    Mailer = require('../util/mailer'),
+    helper = require('../util/helper');
 
 function stripUser(user) {
     delete user.hashedPassword;

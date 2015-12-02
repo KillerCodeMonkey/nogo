@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     crypto = require('crypto'),
-    appConfig = require('config/app'),
+    appConfig = require('../config/app'),
     Schema = mongoose.Schema,
     UserModel,
     // User

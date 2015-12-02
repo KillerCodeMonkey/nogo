@@ -1,5 +1,5 @@
-var modelEndpointHandler = require('util/modelEndpointHandler'),
-    RequestError = require('util/error').RequestError,
+var modelEndpointHandler = require('../util/modelEndpointHandler'),
+    RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
         var version = req.params.version,
             className = req.params.classname,
@@ -12,20 +12,18 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
             if (!objectId) {
                 return cb(null);
             }
-            var models = modelEndpointHandler.initDb(req, [className]);
-            models[0].findById(objectId, function (err, object) {
-                if (err) {
-                    return cb({
-                        error: err
-                    });
-                }
-                if (!object) {
-                    return cb({
-                        error: 'object_not_found'
-                    });
-                }
-                cb(null, object);
-            });
+            modelEndpointHandler.load().then(function () {
+                var models = modelEndpointHandler.initDb(req, [className]);
+                models[0].findById(objectId, function (err, object) {
+                    if (err) {
+                        return cb(err);
+                    }
+                    if (!object) {
+                        return cb('object_not_found');
+                    }
+                    cb(null, object);
+                });
+            }, cb);
         }
 
         function getAction(actionList, cb) {
@@ -33,36 +31,26 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
             if (actionName) {
                 // check if action exists.
                 if (!actionList[actionName]) {
-                    return cb({
-                        error: 'action_not_found'
-                    });
+                    return cb('action_not_found');
                 }
                 if (actionList[actionName].object && !objectId) {
-                    return cb({
-                        error: 'missing_object'
-                    });
+                    return cb('missing_object');
                 }
                 if (!actionList[actionName].object && objectId) {
-                    return cb({
-                        error: 'not_object_action'
-                    });
+                    return cb('not_object_action');
                 }
                 return cb(null, actionList[actionName]);
             }
             // object request
             if (objectId) {
                 if (!actionList.object) {
-                    return cb({
-                        error: 'action_not_found'
-                    });
+                    return cb('action_not_found');
                 }
                 return cb(null, actionList.object);
             }
             // class request
             if (!actionList['']) {
-                return cb({
-                    error: 'action_not_found'
-                });
+                return cb('action_not_found');
             }
             return cb(null, actionList['']);
         }
@@ -99,7 +87,7 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
                 //  load all actions
                 var actionList = endpoint[version][method];
 
-                getAction(actionList, function (actionErr, action) {
+                return getAction(actionList, function (actionErr, action) {
                     if (actionErr) {
                         return next(new RequestError(actionErr, 404));
                     }
@@ -108,12 +96,12 @@ var modelEndpointHandler = require('util/modelEndpointHandler'),
                     }
 
                     req.customData.action = action;
-                    loadObject(function (err, object) {
+                    return loadObject(function (err, object) {
                         if (err) {
                             return next(new RequestError(err, 404));
                         }
                         req.customData.object = object;
-                        next();
+                        return next();
                     });
                 });
             })
