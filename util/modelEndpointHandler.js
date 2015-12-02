@@ -9,12 +9,12 @@ function requireFile(file) {
     var nameWithoutExtension = file.substr(0, file.lastIndexOf('.'));
 
     return new Promise(function (resolve) {
-        var model = require('models/' + nameWithoutExtension);
+        var model = require('../models/' + nameWithoutExtension);
         models[nameWithoutExtension] = model;
         fs.exists('endpoints/' + file, function (exists) {
             if (exists) {
                 // log.info('#LOAD endpoint: ' + nameWithoutExtension);
-                var endpoint = require('endpoints/' + nameWithoutExtension);
+                var endpoint = require('../endpoints/' + nameWithoutExtension);
                 endpoints[nameWithoutExtension] = endpoint;
                 resolve();
             } else {
