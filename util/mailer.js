@@ -1,12 +1,12 @@
 function buildMailer() {
     var nodemailer = require('nodemailer'),
         smtpTransport = require('nodemailer-smtp-transport'),
-        smtpConfig = require('config/smtp'),
+        smtpConfig = require('../config/smtp'),
         Promise = require('bluebird'),
         path = require('path'),
         emailTemplates = require('email-templates'),
         fs = require('fs'),
-        appConfig = require('config/app'),
+        appConfig = require('../config/app'),
         templateDir = path.resolve(process.cwd(), 'templates'),
         config = {},
         transport;
