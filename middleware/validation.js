@@ -43,7 +43,7 @@ function filterParams(req, action) {
 
     return filteredParams;
 }
-var RequestError = require('util/error').RequestError,
+var RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
 
     if (req.customData && req.customData.action) {

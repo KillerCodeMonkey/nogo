@@ -1,12 +1,10 @@
 /*global module, grunt, require:true*/
 /*jslint vars:true*/
 /* istanbul ignore next */
-require('app-module-path').addPath(__dirname);
-/* istanbul ignore next */
 module.exports = function (grunt) {
     'use strict';
 
-    var dbconfig = require('config/database');
+    var dbconfig = require('./config/database');
 
     var DBPATH = dbconfig.dbpath;
     grunt.file.mkdir(DBPATH);
@@ -133,7 +131,7 @@ module.exports = function (grunt) {
 
     var reinstall = function () {
         var done = this.async();
-        var init = require('util/democontent');
+        var init = require('./util/democontent');
 
         init().then(done, grunt.log.error);
     };
