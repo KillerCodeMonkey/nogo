@@ -9,7 +9,6 @@ function startAppServer() {
         bodyParser = require('body-parser'),
         methodOverride = require('method-override'),
         errorHandler = require('errorhandler'),
-        busboy = require('connect-busboy'),
         mongoose = require('mongoose'),
         cors = require('cors'),
         appConfig = require('./config/app'),
@@ -57,7 +56,6 @@ function startAppServer() {
         extended: true,
         limit: 1024 * 1024 * 10 // extend content length limit for possible base64 uploads
     })); // support for ordinary form-data requests
-    app.use(busboy());
     app.use(methodOverride()); // HTTP PUT and DELETE support
     app.use(express.static(path.join(process.cwd(), 'static', 'public'), {
         maxage: 2592000000 // set max-cache to 30d
