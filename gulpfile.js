@@ -13,7 +13,7 @@ var gulp = require('gulp'),
     };
 
 // crearte db-folder if not already there
-fs.mkdirsSync(path.resolve([process.cwd(), DBPATH]);
+fs.mkdirsSync(path.resolve(process.cwd(), DBPATH);
 
 gulp.task('repairDB', function (cb) {
     exec([commands.killDB, commands.setDBPermissions, commands.repairDB, commands.startDB].join('&&'), function (err, stdout, stderr) {

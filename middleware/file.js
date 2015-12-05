@@ -11,7 +11,7 @@ var multer = require('multer'),
                         var dest = actionFiles.destination;
                         // object request --> object filename exclusion --> create id folder
                         if (req.customData.object && actionFiles.noObject) {
-                            dest = path.resolve([dest, req.customData.object._id]);
+                            dest = path.resolve(dest, req.customData.object._id);
                         }
                         // create destination director if not exists
                         fs.mkdirs(dest, function (err) {

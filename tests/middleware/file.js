@@ -4,8 +4,8 @@ var expect = require('expect.js'),
     path = require('path'),
     FormData = require('form-data'),
     filesMiddleware = require('../../middleware/file'),
-    DEST = path.resolve([process.cwd(), 'tests', 'tmp']),
-    IMG = path.resolve([process.cwd(), 'util', 'flyacts.png']);
+    DEST = path.resolve(process.cwd(), 'tests', 'tmp'),
+    IMG = path.resolve(process.cwd(), 'util', 'flyacts.png');
 
 function formRequest (req, multi, both, cb) {
     var form = new FormData();
@@ -215,7 +215,7 @@ describe('File middleware', function () {
                 }
                 expect(transformedReq.file).to.be.an('object');
                 expect(transformedReq.file.destination).to.be(DEST);
-                fs.stat(path.resolve([DEST, transformedReq.file.filename]), function (err) {
+                fs.stat(path.resolve(DEST, transformedReq.file.filename), function (err) {
                     if (err) {
                         return done(err);
                     }
@@ -248,7 +248,7 @@ describe('File middleware', function () {
                 expect(transformedReq.file).to.be.an('object');
                 expect(transformedReq.file.filename).to.be('hallo');
                 expect(transformedReq.file.destination).to.be(DEST);
-                fs.stat(path.resolve([DEST, transformedReq.file.filename]), function (err) {
+                fs.stat(path.resolve(DEST, transformedReq.file.filename), function (err) {
                     if (err) {
                         return done(err);
                     }
@@ -331,7 +331,7 @@ describe('File middleware', function () {
                 expect(transformedReq.file).to.be.an('object');
                 expect(transformedReq.file.filename).to.be('1234.png');
                 expect(transformedReq.file.destination).to.be(DEST);
-                fs.stat(path.resolve([DEST, transformedReq.file.filename]), function (err) {
+                fs.stat(path.resolve(DEST, transformedReq.file.filename), function (err) {
                     if (err) {
                         return done(err);
                     }
