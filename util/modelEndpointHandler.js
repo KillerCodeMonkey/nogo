@@ -1,5 +1,5 @@
 var Promise = require('bluebird'),
-    fs = require('fs'),
+    fs = require('fs-extra'),
     endpoints = {},
     loaded = false,
     models = {};
@@ -11,42 +11,15 @@ function requireFile(file) {
     return new Promise(function (resolve) {
         var model = require('../models/' + nameWithoutExtension);
         models[nameWithoutExtension] = model;
-        fs.exists('endpoints/' + file, function (exists) {
-            if (exists) {
-                // log.info('#LOAD endpoint: ' + nameWithoutExtension);
-                var endpoint = require('../endpoints/' + nameWithoutExtension);
-                endpoints[nameWithoutExtension] = endpoint;
-                resolve();
-            } else {
-                resolve();
+        fs.stat(process.cwd() + '/endpoints/' + file, function (error) {
+            if (error) {
+                return resolve();
             }
+            var endpoint = require('../endpoints/' + nameWithoutExtension);
+            endpoints[nameWithoutExtension] = endpoint;
+            resolve();
         });
     });
-}
-
-function clearModel(model) {
-    return new Promise(function (resolve, reject) {
-        model.collection.dropAllIndexes(function () {
-            model
-                .remove()
-                .then(resolve, reject);
-        });
-    });
-}
-
-function clearModels(modelsToClear) {
-    var tasks = [],
-        key,
-        model;
-
-    for (key in modelsToClear) {
-        if (modelsToClear.hasOwnProperty(key) && models.hasOwnProperty(key)) {
-            model = models[key];
-            tasks.push(clearModel(model));
-        }
-    }
-
-    return tasks;
 }
 
 function load() {
@@ -121,9 +94,5 @@ module.exports = {
         }, function () {
             callback();
         });
-    },
-
-    clearModels: function (modelsToClear) {
-        return Promise.all(clearModels(modelsToClear));
     }
 };

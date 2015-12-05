@@ -10,7 +10,6 @@
         "nodejs",
         "cron",
         "email",
-        "pm2",
         "rest",
         "api",
         "mongodb",
@@ -20,40 +19,38 @@
         "jsonwebtoken"
     ],
     "scripts": {
-        "preinstall": ["npm install -g grunt-cli", "npm install -g pm2@0.14.5"],
+        "start": "node index",
         "test": "node_modules/.bin/mocha tests/*",
-        "coverage": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha tests/*"
+        "coverage": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha tests/*",
+        "docs": "node_modules/.bin/apidoc -i endpoints/ -o apiDoc/"
     },
     "dependencies": {
+        "fs-extra": "0.26.2",
         "mongodb": "2.0.49",
-        "requirejs": "2.1.22",
         "express": "4.13.3",
         "body-parser": "1.14.1",
         "method-override": "2.3.5",
         "errorhandler": "1.4.2",
         "bluebird": "3.0.5",
         "mongoose": "4.2.7",
-        "grunt": "0.4.5",
-        "grunt-exec": "0.4.6",
-        "grunt-contrib-clean": "0.7.0",
-        "connect-busboy": "0.0.2",
+        "gulp": "3.9.0",
+        "apidoc": "0.13.1",
         "jsonwebtoken": "5.4.1",
-        "mkdirp": "0.5.1",
         "underscore": "1.8.3",
-        "request": "2.67.0",
         "cors": "2.7.1",
         "nodemailer": "1.10.0",
         "nodemailer-smtp-transport": "1.0.4",
         "email-templates": "2.0.1",
-        "handlebars": "4.0.5"
+        "handlebars": "4.0.5",
+        "multer": "1.1.0"
     },
     "licence": "MIT",
     "devDependencies": {
+        "proxyquire": "1.7.3",
+        "form-data": "1.0.0-rc3",
         "expect.js": "0.3.1",
         "supertest": "1.1.0",
         "istanbul": "0.4.0",
-        "proxyquire": "1.7.3",
-        "grunt-apidoc": "0.10.1",
         "mocha": "2.3.4"
     },
     "engines": {

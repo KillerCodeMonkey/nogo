@@ -4,11 +4,8 @@ addons:
         repo_token: f4dd893f866f4fe38fe9498d0b55b2d984de008f7baf2cf6aeb0884e144d3625
 services: mongodb
 node_js:
-  - "4.2.2"
-before_install: npm install -g grunt-cli
+  - "4.2.3"
 install: npm install
-before_script:
-  - grunt exec:install
 script: npm run coverage
 after_success:
   - codeclimate-test-reporter < coverage/lcov.info

@@ -1,33 +1,38 @@
+/* global console, define, process */
+/** @file appServer.js Endpoints for app request
+ *  @module Other
+ * */
 function startAppServer() {
     var path = require('path'),
         express = require('express'),
+        Promise = require('bluebird'),
         bodyParser = require('body-parser'),
         methodOverride = require('method-override'),
         errorHandler = require('errorhandler'),
         busboy = require('connect-busboy'),
         mongoose = require('mongoose'),
+        cors = require('cors'),
         appConfig = require('./config/app'),
         databaseConfig = require('./config/database'),
         action = require('./middleware/action'),
         validation = require('./middleware/validation'),
         permission = require('./middleware/permission'),
         execute = require('./middleware/execute'),
+        files = require('./middleware/file'),
         error = require('./middleware/error'),
         authentication = require('./middleware/authentication'),
-        cors = require('cors'),
         app = express(),
         server,
         // DB connection
         connection = mongoose.createConnection(databaseConfig.host, databaseConfig.dbname, databaseConfig.port);
     // use unified promises through the app.
-    mongoose.Promise = require('bluebird');
+    mongoose.Promise = Promise;
 
     connection.on('open', function () {
         console.info('DB connected');
     });
 
     connection.on('error', function () {
-        console.log(arguments);
         console.error('DB exit!');
     });
 
@@ -62,7 +67,7 @@ function startAppServer() {
         req.db = connection; // set db on req
         next();
     });
-    app.use(authentication); // use authentication middleware
+    app.use(authentication); // use authentication middleware everytime for every request
     // Launch server
     server = app.listen(appConfig.port, function () {
         console.info('Listening on port %d', server.address().port);
@@ -95,12 +100,19 @@ function startAppServer() {
         res.send(resAppConfig);
     });
 
-    // set middlewares
+    // set additional middlewares
+    // 1. Layer: Authnetication --> check auth header --> check if user and authentication are valid
+    // 2. Layer: Action (Check&Get endpoints + possible object)
+    // 3. Permission layer --> check permissions --> check if user has permissions for endpoint
+    // 4. validation --> check endpoint params
+    // 5. files --> possible file upload (only multipart form is supported)
+    // 6. execute --> builds up custom request object to provide only necessary data to the endpoint
+    // 7. error --> handles all errors of the system
     // app.param(['version', 'classname', 'action', 'objectid'], action);
     // set generic provided api class urls
-    app.route('/api/:version/:classname/:action?').all(action, validation, permission, execute);
+    app.route('/api/:version/:classname/:action?').all(action, permission, validation, files, execute);
     // set generic provided api object urls
-    app.route('/api/:version/:classname/id/:objectid/:action?').all(action, validation, permission, execute);
+    app.route('/api/:version/:classname/id/:objectid/:action?').all(action, permission, validation, files, execute);
     // add generic error middleware
     app.use(error);
     return server;

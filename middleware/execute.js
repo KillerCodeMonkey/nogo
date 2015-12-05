@@ -19,8 +19,15 @@ var modelEndpointHandler = require('../util/modelEndpointHandler'),
             if (req.customData.object) {
                 filteredRequest.object = req.customData.object;
             }
-            if (action.file) {
-                filteredRequest.originalRequest = req;
+            if (action.files) {
+                // unify uploaded files --> use files array everytime also if only one file
+                filteredRequest.files = [];
+                if (req.files) {
+                    filteredRequest.files = req.files;
+                }
+                if (req.file) {
+                    filteredRequest.files.push(req.file);
+                }
             }
             if (action.pager) {
                 filteredRequest.pager = helper.setPager(req.query);
