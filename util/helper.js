@@ -1,87 +1,11 @@
-var Promise = require('bluebird'),
-    path = require('path'),
-    fs = require('fs'),
+var path = require('path'),
     _ = require('underscore');
 
 function regExpEscape(val) {
     return val.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&');
 }
 
-// helper to remove dir async, recursive https://github.com/LightSpeedWorks/rmdir-recursive/blob/master/lib/rmdir-recursive.js
-function rmdirRecursive(dir, cb) {
-    var ctx = this, called, results;
-
-    // rmdirRecursiveCallback(err)
-    function rmdirRecursiveCallback(err) {
-        if (err && err.code === 'ENOENT') {
-            err = null;
-            arguments[0] = null;
-        }
-
-        if (!results) {
-            results = arguments;
-        }
-        if (!cb || called) {
-            return;
-        }
-        called = true;
-        cb.apply(ctx, results);
-    }
-
-    // fs.readdir callback...
-    function readdirCallback(err, files) {
-        if (err) {
-            return rmdirRecursiveCallback(err);
-        }
-
-        var n = files.length;
-        if (n === 0) {
-            return fs.rmdir(dir, rmdirRecursiveCallback);
-        }
-
-        files.forEach(function (name) {
-            rmdirRecursive(path.resolve(dir, name), function (fsErr) {
-                if (fsErr) {
-                    return rmdirRecursiveCallback(fsErr);
-                }
-                if (--n === 0) {
-                    return fs.rmdir(dir, rmdirRecursiveCallback);
-                }
-            }); // rmdirRecursive
-        }); // files.forEach
-    } // readdirCallback
-
-    // check arguments
-    if (typeof dir !== 'string') {
-        return rmdirRecursiveCallback('rmdirRecursive: directory path required');
-    }
-    if (cb !== undefined && typeof cb !== 'function') {
-        return rmdirRecursiveCallback('rmdirRecursive: callback must be function');
-    }
-
-    fs.exists(dir, function existsCallback(exists) {
-        // already removed? then nothing to do
-        if (!exists) {
-            return rmdirRecursiveCallback(null);
-        }
-
-        fs.stat(dir, function statCallback(err, stat) {
-            if (err) {
-                return rmdirRecursiveCallback(err);
-            }
-            if (!stat.isDirectory()) {
-                return fs.unlink(dir, rmdirRecursiveCallback);
-            }
-
-            fs.readdir(dir, readdirCallback);
-        }); // fs.stat callback...
-    }); // fs.exists
-}
-
 module.exports = {
-    rmdirRecursiveAsync: function (removePath, cb) {
-        rmdirRecursive(removePath, cb);
-    },
     setPager: function (query) {
         var pager = {},
             validFilter = {};
@@ -249,17 +173,15 @@ module.exports = {
         if (lean || lean === undefined) {
             query.lean();
         }
-        return new Promise(function (resolve, reject) {
-            query
+        return query
                 .exec()
                 .then(function (documents) {
-                    Model
+                    return Model
                         .count(selector)
                         .exec()
                         .then(function (counter) {
-                            resolve([documents, counter]);
-                        }, reject);
-                }, reject);
-        });
+                            return [documents, counter];
+                        });
+                });
     }
 };

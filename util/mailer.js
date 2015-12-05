@@ -5,25 +5,24 @@ function buildMailer() {
         Promise = require('bluebird'),
         path = require('path'),
         emailTemplates = require('email-templates'),
-        fs = require('fs'),
+        fs = require('fs-extra'),
         appConfig = require('../config/app'),
-        templateDir = path.resolve(process.cwd(), 'templates'),
+        templateDir = process.cwd() + '/templates',
         config = {},
         transport;
 
     function getTranslations(templateDir, templateName, params, language) {
         return new Promise(function (resolve, reject) {
-            fs.exists(templateDir + '/' + templateName + '/translations.js', function (exists) {
-                if (exists) {
-                    var fileContent = require(templateDir + '/' + templateName + '/translations');
-                    if (fileContent[language]) {
-                        params.dict = fileContent[language];
-                        return resolve();
-                    }
-                    reject();
-                } else {
-                    reject();
+            fs.stat(templateDir + '/' + templateName + '/translations.js', function (err) {
+                if (err) {
+                    return reject();
                 }
+                var fileContent = require(templateDir + '/' + templateName + '/translations');
+                if (fileContent[language]) {
+                    params.dict = fileContent[language];
+                    return resolve();
+                }
+                reject();
             });
         });
     }

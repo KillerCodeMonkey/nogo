@@ -18,7 +18,7 @@ var expect = require('expect.js'),
     action1 = {
         pager: true,
         models: ['user'],
-        file: true
+        files: []
     },
     action2 = {},
     executeMiddleware = proxyquire('../../middleware/execute', {
@@ -60,7 +60,7 @@ describe('Execute middleware', function () {
     it('200 - with action pager, file, models', function (done) {
         action1.exec = function (req, res, User, next) {
             expect(req).to.be.an('object');
-            expect(req.originalRequest).to.be.an('object');
+            expect(req.files).to.be.an('object');
             expect(req.pager).to.be.an('object');
             expect(User).to.be.an('object');
             expect(next).to.be.a('function');
@@ -90,10 +90,53 @@ describe('Execute middleware', function () {
             return done();
         });
     });
+    it('200 - with action and file req.file', function (done) {
+        action1.exec = function (req, res, User, next) {
+            expect(req).to.be.an('object');
+            expect(req.files).to.be.an('array');
+            expect(req.files.length).to.be(1);
+            expect(req.files[0]).to.be(true);
+            return done();
+        };
+        return executeMiddleware({
+            customData: {
+                action: action1
+            },
+            query: {},
+            file: true
+        }, {}, function (err) {
+            if (err) {
+                return done(err);
+            }
+            return done();
+        });
+    });
+    it('200 - with action and file req.files', function (done) {
+        action1.exec = function (req, res, User, next) {
+            expect(req).to.be.an('object');
+            expect(req.files).to.be.an('array');
+            expect(req.files.length).to.be(2);
+            expect(req.files[0]).to.be(true);
+            expect(req.files[1]).to.be(false);
+            return done();
+        };
+        return executeMiddleware({
+            customData: {
+                action: action1
+            },
+            query: {},
+            files: [true, false]
+        }, {}, function (err) {
+            if (err) {
+                return done(err);
+            }
+            return done();
+        });
+    });
     it('200 - with nothing special', function (done) {
         action2.exec = function (req, res, User, next) {
             expect(req).to.be.an('object');
-            expect(req.originalRequest).to.be(undefined);
+            expect(req.files).to.be(undefined);
             expect(req.pager).to.be(undefined);
             expect(User).to.be.an('object');
             expect(next).to.be.a('function');
