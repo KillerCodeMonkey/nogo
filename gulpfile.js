@@ -7,13 +7,10 @@ var gulp = require('gulp'),
 
     commands = {
         killDB: 'killall mongod || true',
-        startDB: 'mongod -v --port=' + dbconfig.port + ' --storageEngine wiredTiger --dbpath=' + path.normalize(DBPATH) + ' --logpath=' + path.normalize(DBPATH + '/server1.log') + '--logappend --journal --smallfiles&',
         setDBPermissions: 'chown -cR mongodb ' + path.normalize(DBPATH) + ' && ' + 'chgrp -cR mongodb ' + path.normalize(DBPATH),
-        repairDB: 'mongod --repair --dbpath ' + path.normalize(DBPATH)
+        repairDB: 'mongod --repair --dbpath ' + path.normalize(DBPATH),
+        startDB: 'mongod -v --port=' + dbconfig.port + ' --storageEngine wiredTiger --dbpath=' + path.normalize(DBPATH) + ' --logpath=' + path.normalize(DBPATH + '/server1.log') + '--logappend --journal --smallfiles&'
     };
-
-// crearte db-folder if not already there
-fs.mkdirsSync(path.resolve(process.cwd(), DBPATH);
 
 gulp.task('repairDB', function (cb) {
     exec([commands.killDB, commands.setDBPermissions, commands.repairDB, commands.startDB].join('&&'), function (err, stdout, stderr) {
@@ -32,6 +29,9 @@ gulp.task('killDB', function (cb) {
 });
 
 gulp.task('startDB', function (cb) {
+    // crearte db-folder if not already there
+    fs.mkdirsSync(path.resolve(process.cwd(), DBPATH);
+
     exec(commands.killDB, function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
@@ -53,7 +53,7 @@ gulp.task('democontent', function (cb) {
         throw 'Not allowed on live system ;)';
     }
     // remove public files
-    fs.remove(path.resolve([process.cwd(), '/static/public']), function () {
+    fs.remove(path.resolve(process.cwd(), '/static/public'), function () {
         // drop old db collections --> create fresh demodata
         democontent().then(cb, cb);
     });
