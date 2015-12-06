@@ -30,7 +30,7 @@ gulp.task('killDB', function (cb) {
 
 gulp.task('startDB', function (cb) {
     // crearte db-folder if not already there
-    fs.mkdirsSync(path.resolve(process.cwd(), DBPATH);
+    fs.mkdirsSync(path.resolve(process.cwd(), DBPATH));
 
     exec(commands.killDB, function (err, stdout, stderr) {
         console.log(stdout);

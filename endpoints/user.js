@@ -3,12 +3,12 @@ var rest = {},
         'username',
         '_id'
     ],
-    RequestError = require('../util/error').RequestError;
+    RequestError = require('../util/error').RequestError,
     appConfig = require('../config/app'),
-    Promise = require('bluebird'),
-    _ = require('underscore'),
     Mailer = require('../util/mailer'),
-    helper = require('../util/helper');
+    helper = require('../util/helper'),
+    Promise = require('bluebird'),
+    _ = require('underscore');
 
 function stripUser(user) {
     delete user.hashedPassword;
@@ -196,7 +196,7 @@ rest.getOne = {
     object: true,
     permissions: [],
     models: [],
-    exec: function (req, res, next) {
+    exec: function (req, res) {
         if (req.object.permissions.indexOf(appConfig.permissions.admin) !== -1) {
             throw new RequestError(null, 303);
         }
