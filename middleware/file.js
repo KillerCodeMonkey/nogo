@@ -11,7 +11,7 @@ var multer = require('multer'),
                         var dest = actionFiles.destination;
                         // object request --> object filename exclusion --> create id folder
                         if (req.customData.object && actionFiles.noObject) {
-                            dest = path.resolve(dest, req.customData.object._id);
+                            dest = path.resolve(dest, req.customData.object._id.toString());
                         }
                         // create destination director if not exists
                         fs.mkdirs(dest, function (err) {
@@ -41,7 +41,7 @@ var multer = require('multer'),
                         }
                         // if there is request.object --> use object id
                         if (req.customData.object && !actionFiles.noObject) {
-                            return cb(null, req.customData.object._id + ext);
+                            return cb(null, req.customData.object._id.toString() + ext);
                         }
 
                         // no action filename, no object id --> use generated filename (7random numbers and chard + timestamp)
