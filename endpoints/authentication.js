@@ -45,7 +45,7 @@ function generateAuthentication(user, Authentication, token, platform, uuid) {
         refreshToken,
         auth;
 
-    accessToken = jwt.sign(userData, appConfig.secret, { expiresInMinutes: appConfig.tokenExpiresInMinutes });
+    accessToken = jwt.sign(userData, appConfig.secret, { expiresInSeconds: appConfig.tokenExpiresInSeconds });
     userData.accessToken = accessToken;
 
     refreshToken = jwt.sign(userData, appConfig.secret);
