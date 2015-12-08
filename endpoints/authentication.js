@@ -45,7 +45,7 @@ function generateAuthentication(user, Authentication, token, platform, uuid) {
         refreshToken,
         auth;
 
-    accessToken = jwt.sign(userData, appConfig.secret, { expiresInSeconds: appConfig.tokenExpiresInSeconds });
+    accessToken = jwt.sign(userData, appConfig.secret, { expiresIn: appConfig.tokenExpiresInSeconds });
     userData.accessToken = accessToken;
 
     refreshToken = jwt.sign(userData, appConfig.secret);
@@ -337,7 +337,7 @@ rest.refresh = {
             .exec()
             .then(function (authentication) {
                 if (!authentication) {
-                    throw new RequestError(null, 404);
+                    throw new RequestError('authentication_not_found', 404);
                 }
                 if (authentication.refreshToken !== params.refreshToken) {
                     throw new RequestError('invalid_refresh_token', 400);
@@ -350,7 +350,7 @@ rest.refresh = {
             })
             .then(function (user) {
                 if (!user) {
-                    throw new RequestError('user_not_found', 400);
+                    throw new RequestError('user_for_authentication_not_found', 404);
                 }
 
                 loginUser = user;
