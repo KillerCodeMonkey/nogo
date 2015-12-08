@@ -390,7 +390,7 @@ describe('Authentication model', function () {
                     done();
                 });
         });
-        it('403 - wrong accessToken', function (done) {
+        it('404 - wrong accessToken', function (done) {
             request(app)
                 .post(restURL + '/refresh')
                 .send({

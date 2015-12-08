@@ -49,7 +49,7 @@ var jwt = require('jsonwebtoken'),
                 })
                 .then(function (currentAuthentication) {
                     if (!currentAuthentication) {
-                        throw new RequestError('invalid_authorization', 403);
+                        throw new RequestError('authentication_not_found', 404);
                     }
                     authentication = currentAuthentication;
 
@@ -59,7 +59,7 @@ var jwt = require('jsonwebtoken'),
                 })
                 .then(function (user) {
                     if (!user) {
-                        throw new RequestError('user_not_found', 404);
+                        throw new RequestError('user_for_authentication_not_found', 404);
                     }
                     // everything works -> put decoded user on req.
                     if (!req.customData) {

@@ -139,7 +139,7 @@ describe('Authentication middleware', function () {
             return done();
         });
     });
-    it('403 - no auth', function (done) {
+    it('404 - no auth', function (done) {
         meHandlerMock.models.authentication.success = false;
         return authenticationMiddleware({
             headers: {
@@ -152,8 +152,8 @@ describe('Authentication middleware', function () {
             }
 
             expect(err).to.be.an('object');
-            expect(err.status).to.be(403);
-            expect(err.name).to.be('invalid_authorization');
+            expect(err.status).to.be(404);
+            expect(err.name).to.be('authentication_not_found');
             return done();
         });
     });
@@ -170,7 +170,7 @@ describe('Authentication middleware', function () {
             }
             expect(err).to.be.an('object');
             expect(err.status).to.be(404);
-            expect(err.name).to.be('user_not_found');
+            expect(err.name).to.be('user_for_authentication_not_found');
             return done();
         });
     });

@@ -3,8 +3,7 @@ var multer = require('multer'),
     path = require('path'),
     RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
-        var uploads = [],
-            actionFiles,
+        var actionFiles,
             createStorage = function (actionFiles) {
                 return multer.diskStorage({
                     destination: function (req, file, cb) {

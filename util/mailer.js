@@ -7,7 +7,7 @@ function buildMailer() {
         emailTemplates = require('email-templates'),
         fs = require('fs-extra'),
         appConfig = require('../config/app'),
-        templateDir = process.cwd() + '/templates',
+        templateDir = path.resolve(process.cwd(), 'templates'),
         config = {},
         transport;
 
