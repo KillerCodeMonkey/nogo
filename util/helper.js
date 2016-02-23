@@ -6,28 +6,6 @@ function regExpEscape(val) {
 }
 
 module.exports = {
-    setPager: function (query) {
-        var pager = {},
-            validFilter = {};
-
-        // build up pager object
-        pager.page = query.page ? parseInt(query.page, 10) : undefined; // requested pager
-        pager.limit = query.limit ? parseInt(query.limit, 10) : undefined; // number of entries per page
-        pager.skip = pager.limit && pager.page ? pager.limit * (pager.page - 1) : undefined; // calculate skip value
-        pager.filter = query.filter ? query.filter instanceof Array ? query.filter : [query.filter] : []; // set filter
-        pager.value = query.value ? query.value instanceof Array ? query.value : [query.value] : []; // filter value
-        pager.orderBy = query.orderBy || undefined; // orderBy
-        pager.orderDesc = query.orderDesc && query.orderBy ? query.orderDesc === 'true' || query.orderDesc === '1' ? true : false : undefined; // sortOrder
-
-        _.each(pager.filter, function (filter, index) {
-            if (pager.value[index]) {
-                validFilter[filter] = pager.value[index];
-            }
-        });
-        pager.filter = validFilter;
-        delete pager.value;
-        return pager;
-    },
     queryFormatter: {
         bool: function (val) {
             if (val === 'true' || val === 1 || val === '1') {
