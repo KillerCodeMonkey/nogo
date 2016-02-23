@@ -29,8 +29,8 @@ var modelEndpointHandler = require('../util/modelEndpointHandler'),
                     filteredRequest.files.push(req.file);
                 }
             }
-            if (action.pager) {
-                filteredRequest.pager = helper.setPager(req.query);
+            if (req.customData.pager) {
+                filteredRequest.pager = req.customData.pager;
             }
 
             return modelEndpointHandler.load().then(function () {

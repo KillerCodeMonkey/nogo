@@ -14,6 +14,7 @@ function startAppServer() {
         appConfig = require('./config/app'),
         databaseConfig = require('./config/database'),
         action = require('./middleware/action'),
+        pager = require('./middleware/pager'),
         validation = require('./middleware/validation'),
         permission = require('./middleware/permission'),
         execute = require('./middleware/execute'),
@@ -108,9 +109,9 @@ function startAppServer() {
     // 7. error --> handles all errors of the system
     // app.param(['version', 'classname', 'action', 'objectid'], action);
     // set generic provided api class urls
-    app.route('/api/:version/:classname/:action?').all(action, permission, validation, files, execute);
+    app.route('/api/:version/:classname/:action?').all(action, permission, validation, files, pager, execute);
     // set generic provided api object urls
-    app.route('/api/:version/:classname/id/:objectid/:action?').all(action, permission, validation, files, execute);
+    app.route('/api/:version/:classname/id/:objectid/:action?').all(action, permission, validation, pager, files, execute);
     // add generic error middleware
     app.use(error);
     return server;

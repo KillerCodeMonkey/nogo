@@ -1,4 +1,5 @@
 var path = require('path'),
+    Promise = require('bluebird'),
     _ = require('underscore');
 
 function regExpEscape(val) {
@@ -6,28 +7,6 @@ function regExpEscape(val) {
 }
 
 module.exports = {
-    setPager: function (query) {
-        var pager = {},
-            validFilter = {};
-
-        // build up pager object
-        pager.page = query.page ? parseInt(query.page, 10) : undefined; // requested pager
-        pager.limit = query.limit ? parseInt(query.limit, 10) : undefined; // number of entries per page
-        pager.skip = pager.limit && pager.page ? pager.limit * (pager.page - 1) : undefined; // calculate skip value
-        pager.filter = query.filter ? query.filter instanceof Array ? query.filter : [query.filter] : []; // set filter
-        pager.value = query.value ? query.value instanceof Array ? query.value : [query.value] : []; // filter value
-        pager.orderBy = query.orderBy || undefined; // orderBy
-        pager.orderDesc = query.orderDesc && query.orderBy ? query.orderDesc === 'true' || query.orderDesc === '1' ? true : false : undefined; // sortOrder
-
-        _.each(pager.filter, function (filter, index) {
-            if (pager.value[index]) {
-                validFilter[filter] = pager.value[index];
-            }
-        });
-        pager.filter = validFilter;
-        delete pager.value;
-        return pager;
-    },
     queryFormatter: {
         bool: function (val) {
             if (val === 'true' || val === 1 || val === '1') {
@@ -135,53 +114,95 @@ module.exports = {
         return Math.random().toString(36).slice(length);
     },
     regExpEscape: regExpEscape,
-    getPage: function (Model, selector, populates, limiting, skipping, selecting, sorting, sortDesc, slices, lean) {
-        var query;
+    getPage: function (Model, selector, populates, limiting, skipping, selecting, sorting, sortDesc, slices, projections) {
+        var options = [],
+            finalPopulates = [],
+            project = {};
 
         // Build up query for Pager
         selector = selector || {};
-        query = Model.find(selector);
+        options.push({
+            $match: selector
+        });
 
         if (populates && populates.length) {
             _.each(populates, function (populating) {
-                query.populate(populating);
+                finalPopulates.push(populating);
             });
-        }
-        if (limiting) {
-            query.limit(limiting);
-        }
-        if (skipping) {
-            query.skip(skipping);
-        }
-
-        if (selecting) {
-            query.select(selecting);
-        }
-        if (sorting) {
-            if (typeof sorting === 'string') {
-                sorting = sortDesc ? '-' + sorting : sorting;
-            }
-            query.sort(sorting);
         }
         if (slices && slices.length) {
             _.each(slices, function (slice) {
                 if (slice.path && slice.value) {
-                    query.slice(slice.path, slice.value);
+                    project[slice.path] = {
+                        $slice: ['$' + slice.path, slice.value]
+                    };
                 }
             });
         }
-        if (lean || lean === undefined) {
-            query.lean();
+        if (selecting) {
+            var fields = selecting.split(' ');
+
+            _.each(fields, function (field) {
+                project[field] = 1;
+            });
         }
-        return query
-                .exec()
-                .then(function (documents) {
-                    return Model
-                        .count(selector)
-                        .exec()
-                        .then(function (counter) {
-                            return [documents, counter];
+        if (projections) {
+            _.each(projections, function (projection) {
+                options.push({
+                    $project: projection
+                });
+            });
+        }
+        if (sorting) {
+            var sort = {
+                $sort: {}
+            };
+            if (typeof sorting === 'object') {
+                sort.$sort = sorting;
+            } else {
+                sort.$sort[sorting] = sortDesc ? -1 : 1;
+            }
+
+            options.push(sort);
+        }
+
+        if (selecting) {
+            options.push({
+                $project: project
+            });
+        }
+
+        if (limiting) {
+            options.push({
+                $limit: limiting + (skipping || 0)
+            });
+        }
+
+        if (skipping) {
+            options.push({
+                $skip: skipping
+            });
+        }
+        return new Promise(function (resolve, reject) {
+            Model
+                .aggregate(options)
+                .exec(function (error, result) {
+                    if (error) {
+                        return reject(error);
+                    }
+                    Model
+                        .populate(result, finalPopulates, function (err, documents) {
+                            if (err) {
+                                return reject(err);
+                            }
+                            Model.count(selector).exec(function (err, counter) {
+                                if (err) {
+                                    return reject(err);
+                                }
+                                resolve([documents, counter]);
+                            });
                         });
                 });
+        });
     }
 };

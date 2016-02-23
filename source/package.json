@@ -20,9 +20,10 @@
     ],
     "scripts": {
         "start": "node index",
-        "test": "node_modules/.bin/mocha tests/*",
-        "coverage": "node_modules/.bin/istanbul cover node_modules/.bin/_mocha tests/*",
-        "docs": "node_modules/.bin/apidoc -i endpoints/ -o apiDoc/"
+        "test": "mocha tests/*",
+        "coverage": "istanbul cover _mocha tests/*",
+        "coverageLcovOnly": "istanbul cover _mocha --report lcovonly tests/* -- -R spec",
+        "docs": "apidoc -i endpoints/ -o apiDoc/"
     },
     "dependencies": {
         "fs-extra": "0.26.2",

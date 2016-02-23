@@ -4,6 +4,7 @@ var gulp = require('gulp'),
     fs = require('fs-extra'),
     democontent = require('./util/democontent'),
     DBPATH = dbconfig.dbpath,
+    path = require('path'),
 
     commands = {
         killDB: 'killall mongod || true',
