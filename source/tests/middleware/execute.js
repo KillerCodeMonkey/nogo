@@ -61,7 +61,6 @@ describe('Execute middleware', function () {
         action1.exec = function (req, res, User, next) {
             expect(req).to.be.an('object');
             expect(req.files).to.be.an('object');
-            expect(req.pager).to.be.an('object');
             expect(User).to.be.an('object');
             expect(next).to.be.a('function');
             expect(req.user).to.be('test');

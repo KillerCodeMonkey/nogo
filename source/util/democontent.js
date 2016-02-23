@@ -2,7 +2,7 @@ var connection,
     Promise = require('bluebird'),
     mongoose = require('mongoose'),
     databaseConfig = require('../config/database'),
-    meHandler = require('./meHandler'),
+    meHandler = require('./modelEndpointHandler'),
     demoContent = function () {
         'use strict';
         var tasks = [];
@@ -64,4 +64,4 @@ var connection,
             });
         });
     };
-module.exports = demoContent();
+module.exports = demoContent;

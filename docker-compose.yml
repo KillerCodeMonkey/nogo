@@ -1,0 +1,35 @@
+dev_backend:
+    build: .
+    command: "npm run start"
+    container_name: nogo_api
+    ports:
+        - "8888:8888"
+    links:
+        - dev_database:db
+        - dev_smtp:mail
+    environment:
+        - "NODE_TLS_REJECT_UNAUTHORIZED=0"
+        - "SECRET_KEY=K'Ud;KuqdXJ`s[Bbq++2<U'8F,VYcx7]X'@}Y{@D"
+        - "MAIL_SENDER=test-mailer@nogo.com"
+    volumes:
+        - ./source/:/usr/src/app
+        - /data/nogo/public/:/usr/src/app/static/public
+dev_database:
+    image: "mongo:3.2.3"
+    container_name: nogo_db
+    expose:
+        - "27017"
+    volumes:
+        - /data/nogo/database/:/data/db
+    command: -v --storageEngine wiredTiger --dbpath=/data/db --logpath /data/db/server1.log --logappend --journal --smallfiles
+dev_smtp:
+    container_name: nogo_smtp
+    image: "marvambass/versatile-postfix"
+    command: de.nogo.com info:infopwd
+    expose:
+        - "25"
+    volumes:
+        - /data/rhenus/maildirs:/var/mail
+    environment:
+        - "ALIASES=postmaster:root;hostmaster:root;webmaster:root"
+        - "DISABLE_DKIM=1"

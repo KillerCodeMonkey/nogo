@@ -1,0 +1,20 @@
+test_runner:
+    build: .
+    container_name: nogo_test_runner
+    command: npm run coverage
+    links:
+        - test_database:db
+    environment:
+        - "NODE_TLS_REJECT_UNAUTHORIZED=0"
+        - "SECRET_KEY=K'Ud;KuqdXJ`s[Bbq++2<U'8F,VYcx7]X'@}Y{@D"
+    volumes:
+        - ./source:/usr/src/app
+        - /data/nogo/public/:/usr/src/app/static/public
+test_database:
+    image: "mongo:3.2.3"
+    container_name: nogo_test_db
+    expose:
+        - "27017"
+    volumes:
+        - /data/nogo_test/database/:/data/db
+    command: -v --storageEngine wiredTiger --dbpath=/data/db --logpath /data/db/server1.log --logappend --journal --smallfiles
