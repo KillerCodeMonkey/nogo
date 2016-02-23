@@ -27,7 +27,7 @@ function getUser(selector, User) {
         });
 }
 
-function createPager(User, selector, pager, lean, getAllFields) {
+function createPager(User, selector, pager, getAllFields) {
     selector = selector || {};
     pager = pager || {};
     var populates = [],
@@ -55,7 +55,7 @@ function createPager(User, selector, pager, lean, getAllFields) {
     }
 
     return new Promise(function (resolve, reject) {
-        helper.getPage(User, selector, populates, pager.limit, pager.skip, !getAllFields ? fields.join(' ') : undefined, pager.orderBy, pager.orderDesc, lean).then(function (results) {
+        helper.getPage(User, selector, populates, pager.limit, pager.skip, !getAllFields ? fields.join(' ') : undefined, pager.orderBy, pager.orderDesc).then(function (results) {
             var rows = results[0],
                 counter = results[1];
 
@@ -115,7 +115,7 @@ rest.get = {
         if (req.user && req.user.permissions.indexOf(appConfig.permissions.admin) === -1) {
             getAllFields = false;
         }
-        createPager(User, selector, req.pager, undefined, getAllFields).then(function (results) {
+        createPager(User, selector, req.pager, getAllFields).then(function (results) {
             res.send({
                 entries: results[0],
                 pager: results[1]
