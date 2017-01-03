@@ -9,7 +9,7 @@ apt-get update
 apt-get install wget
 wget -qO- https://get.docker.com/ | sh
 sudo usermod -aG docker vagrant
-sudo su -c 'curl -L https://github.com/docker/compose/releases/download/1.5.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose'
+sudo su -c 'curl -L https://github.com/docker/compose/releases/download/1.9.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose'
 sudo chmod +x /usr/local/bin/docker-compose
 SCRIPT
 
@@ -60,7 +60,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Don't boot with headless mode
   #   vb.gui = true
     vb.name = "nogo_docker_box"
-    vb.memory = 1024
+    vb.memory = 2048
     vb.cpus = 2
   end
 

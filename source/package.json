@@ -6,6 +6,7 @@
         "type": "git",
         "url": "https://github.com/KillerCodeMonkey/nogo"
     },
+    "license": "MIT",
     "keywords": [
         "nodejs",
         "cron",
@@ -26,36 +27,35 @@
         "docs": "apidoc -i endpoints/ -o apiDoc/"
     },
     "dependencies": {
-        "fs-extra": "0.26.2",
-        "mongodb": "2.0.49",
-        "express": "4.13.3",
-        "body-parser": "1.14.1",
-        "method-override": "2.3.5",
-        "errorhandler": "1.4.2",
-        "bluebird": "3.0.5",
-        "mongoose": "4.2.7",
-        "gulp": "3.9.0",
-        "apidoc": "0.13.1",
-        "jsonwebtoken": "5.4.1",
-        "underscore": "1.8.3",
-        "cors": "2.7.1",
-        "nodemailer": "1.10.0",
-        "nodemailer-smtp-transport": "1.0.4",
-        "email-templates": "2.0.1",
-        "handlebars": "4.0.5",
-        "multer": "1.1.0"
+        "fs-extra": "^1.0.0",
+        "mongodb": "^2.2.16",
+        "express": "^4.14.0",
+        "body-parser": "^1.15.2",
+        "method-override": "^2.3.7",
+        "errorhandler": "^1.5.0",
+        "bluebird": "^3.4.7",
+        "mongoose": "^4.7.6",
+        "gulp": "^3.9.1",
+        "apidoc": "^0.16.0",
+        "jsonwebtoken": "^7.2.1",
+        "underscore": "^1.8.3",
+        "cors": "^2.8.1",
+        "nodemailer": "^2.7.0",
+        "nodemailer-smtp-transport": "^2.7.2",
+        "email-templates": "^2.5.4",
+        "handlebars": "^4.0.6",
+        "multer": "^1.2.1"
     },
-    "licence": "MIT",
     "devDependencies": {
-        "proxyquire": "1.7.3",
-        "form-data": "1.0.0-rc3",
-        "expect.js": "0.3.1",
-        "supertest": "1.1.0",
-        "istanbul": "0.4.0",
-        "mocha": "2.3.4"
+        "proxyquire": "^1.7.10",
+        "form-data": "^2.1.2",
+        "expect.js": "^0.3.1",
+        "supertest": "^2.0.1",
+        "istanbul": "^0.4.5",
+        "mocha": "^3.2.0"
     },
     "engines": {
-        "node":  ">= 0.12.8"
+        "node":  ">= 4.7.0"
     },
     "apidoc": {
         "title": "NoGo - API Documentation",

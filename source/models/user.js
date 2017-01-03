@@ -1,8 +1,8 @@
-var mongoose = require('mongoose'),
+const mongoose = require('mongoose'),
     crypto = require('crypto'),
     appConfig = require('../config/app'),
-    Schema = mongoose.Schema,
-    UserModel,
+    Schema = mongoose.Schema;
+let UserModel,
     // User
     User = new Schema({
         firstName: String,

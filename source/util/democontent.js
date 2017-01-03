@@ -1,11 +1,11 @@
-var connection,
-    Promise = require('bluebird'),
+const Promise = require('bluebird'),
     mongoose = require('mongoose'),
     databaseConfig = require('../config/database'),
     meHandler = require('./modelEndpointHandler'),
     demoContent = function () {
         'use strict';
-        var tasks = [];
+        let connection,
+            tasks = [];
 
         // DB connection
         return new Promise(function (resolve, reject) {
@@ -25,7 +25,7 @@ var connection,
 
                     meHandler.load().then(function () {
                         meHandler.init(connection, function (models) {
-                            var user = new models.User({
+                            const user = new models.User({
                                     lastName: 'Senfmann',
                                     firstName: 'Horst',
                                     username: 'meisterLampe',

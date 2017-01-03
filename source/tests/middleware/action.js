@@ -1,4 +1,4 @@
-var expect = require('expect.js'),
+const expect = require('expect.js'),
     proxyquire = require('proxyquire'),
     Promise = require('bluebird'),
     meHandlerMock = {
@@ -36,9 +36,8 @@ var expect = require('expect.js'),
             return [this.models.user];
         },
         load: function () {
-            var self = this;
-            return new Promise(function (resolve) {
-                resolve([self.models, self.endpoints]);
+            return new Promise((resolve) => {
+                resolve([this.models, this.endpoints]);
             });
         }
     },

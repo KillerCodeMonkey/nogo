@@ -1,9 +1,9 @@
-var jwt = require('jsonwebtoken'),
+const jwt = require('jsonwebtoken'),
     appConfig = require('../config/app'),
     RequestError = require('../util/error').RequestError,
     modelEndpointHandler = require('../util/modelEndpointHandler'),
     middleware = function (req, res, next) {
-        var token,
+        let token,
             parts,
             scheme,
             authentication,
@@ -37,7 +37,7 @@ var jwt = require('jsonwebtoken'),
 
             return modelEndpointHandler.load()
                 .then(function () {
-                    var models = modelEndpointHandler.initDb(req, ['authentication', 'user']);
+                    let models = modelEndpointHandler.initDb(req, ['authentication', 'user']);
                     Authentication = models[0];
                     User = models[1];
 

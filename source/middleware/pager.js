@@ -1,6 +1,6 @@
-var _ = require('underscore'),
+const _ = require('underscore'),
     middleware = function (req, res, next) {
-        var action = req.customData.action,
+        let action = req.customData.action,
             query = req.query,
             pager = {},
             validFilter = {};

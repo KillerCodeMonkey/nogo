@@ -15,7 +15,7 @@ dev_backend:
         - ./source/:/usr/src/app
         - /data/nogo/public/:/usr/src/app/static/public
 dev_database:
-    image: "mongo:3.2.3"
+    image: "mongo:3.4.1"
     container_name: nogo_db
     expose:
         - "27017"
@@ -29,7 +29,7 @@ dev_smtp:
     expose:
         - "25"
     volumes:
-        - /data/rhenus/maildirs:/var/mail
+        - /data/nogo/maildirs:/var/mail
     environment:
         - "ALIASES=postmaster:root;hostmaster:root;webmaster:root"
         - "DISABLE_DKIM=1"

@@ -1,10 +1,10 @@
-var rest = {},
-    RequestError = require('../util/error').RequestError,
-    jwt = require('jsonwebtoken'),
-    crypto = require('crypto'),
-    appConfig = require('../config/app'),
-    dbConfig = require('../config/database'),
-    Promise = require('bluebird');
+let rest = {};
+const RequestError = require('../util/error').RequestError;
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const appConfig = require('../config/app');
+const dbConfig = require('../config/database');
+const Promise = require('bluebird');
 
 function removeAuthenticationByUUID(uuid, Authentication) {
     return Authentication
@@ -14,23 +14,24 @@ function removeAuthenticationByUUID(uuid, Authentication) {
         .distinct('_id')
         .exec()
         .then(function (authenticationIDs) {
-            if (authenticationIDs && authenticationIDs.length) {
-                return Authentication
-                    .remove({
-                        _id: {
-                            $in: authenticationIDs
-                        }
-                    })
-                    .exec();
+            if (!authenticationIDs || !authenticationIDs.length) {
+                return null;
             }
-            return;
+            
+            return Authentication
+                .remove({
+                    _id: {
+                        $in: authenticationIDs
+                    }
+                })
+                .exec();
         });
 }
 
 // store new authentication for user
 function generateAuthentication(user, Authentication, token, platform, uuid) {
-    var secret = crypto.randomBytes(128).toString('base64'),
-        userData = {
+    const secret = crypto.randomBytes(128).toString('base64');
+    let userData = {
             id: user.user || user._id,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -175,7 +176,7 @@ rest.login = {
     },
     models: ['user', 'authentication'],
     exec: function (req, res, User, Authentication, next) {
-        var tasks = [],
+        let tasks = [],
             loginUser;
 
         if (req.user) {
@@ -239,7 +240,7 @@ rest.token = {
     permissions: [appConfig.permissions.user],
     models: ['authentication'],
     exec: function (req, res, Authentication, next) {
-        var params = req.params;
+        let params = req.params;
 
         Authentication
             .remove({
@@ -326,7 +327,7 @@ rest.refresh = {
     permissions: [],
     models: ['authentication', 'user'],
     exec: function (req, res, Authentication, User, next) {
-        var params = req.params,
+        let params = req.params,
             loginUser,
             oldAuth;
 

@@ -1,8 +1,8 @@
-var request = require('supertest'),
+const request = require('supertest'),
     expect = require('expect.js'),
     testHandler = require('../../util/testHandler'),
-    app = require('../../appServer'),
-    restURL,
+    app = require('../../appServer');
+let restURL,
     user;
 
 
@@ -26,7 +26,7 @@ describe('Authentication model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -70,7 +70,7 @@ describe('Authentication model', function () {
                 })
                 .expect(200)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -104,7 +104,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -128,7 +128,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -149,7 +149,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -171,7 +171,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -190,7 +190,7 @@ describe('Authentication model', function () {
                 .post(restURL + '/login')
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -214,7 +214,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -241,7 +241,7 @@ describe('Authentication model', function () {
                 .set('Authorization', 'Bearer ' + user.accessToken)
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         done(err);
                     } else {
@@ -271,7 +271,7 @@ describe('Authentication model', function () {
                 .set('Authorization', 'Bearer ' + user.accessToken)
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         return done(err);
                     }
@@ -293,7 +293,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         return done(err);
                     }
@@ -316,7 +316,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         return done(err);
                     }
@@ -354,7 +354,7 @@ describe('Authentication model', function () {
                     if (err) {
                         done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
                     expect(data.accessToken).not.to.be(null);
@@ -378,7 +378,7 @@ describe('Authentication model', function () {
                     if (err) {
                         done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
                     expect(data.accessToken).not.to.be(null);
@@ -408,7 +408,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         return done(err);
                     }
@@ -428,7 +428,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         return done(err);
                     }
@@ -449,7 +449,7 @@ describe('Authentication model', function () {
                 })
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         return done(err);
                     }
@@ -467,7 +467,7 @@ describe('Authentication model', function () {
                 .post(restURL + '/refresh')
                 .expect(400)
                 .end(function (err, res) {
-                    var data = res.body;
+                    const data = res.body;
                     if (err) {
                         return done(err);
                     }
