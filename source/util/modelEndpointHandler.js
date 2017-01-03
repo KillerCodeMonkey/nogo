@@ -1,21 +1,22 @@
-var Promise = require('bluebird'),
-    fs = require('fs-extra'),
-    endpoints = {},
+const Promise = require('bluebird'),
+    fs = require('fs-extra');
+
+let endpoints = {},
     loaded = false,
     models = {};
 
 // require model and enpoint
 function requireFile(file) {
-    var nameWithoutExtension = file.substr(0, file.lastIndexOf('.'));
+    let nameWithoutExtension = file.substr(0, file.lastIndexOf('.'));
 
     return new Promise(function (resolve) {
-        var model = require('../models/' + nameWithoutExtension);
+        let model = require('../models/' + nameWithoutExtension);
         models[nameWithoutExtension] = model;
         fs.stat(process.cwd() + '/endpoints/' + file, function (error) {
             if (error) {
                 return resolve();
             }
-            var endpoint = require('../endpoints/' + nameWithoutExtension);
+            let endpoint = require('../endpoints/' + nameWithoutExtension);
             endpoints[nameWithoutExtension] = endpoint;
             resolve();
         });
@@ -23,12 +24,12 @@ function requireFile(file) {
 }
 
 function load() {
-    var tasks = [];
+    let tasks = [];
 
     return new Promise(function (resolve, reject) {
         if (!loaded) {
             fs.readdir('models', function (err, files) {
-                var i = 0;
+                let i = 0;
                 if (err) {
                     console.error('error during reading models');
                     return reject();
@@ -52,7 +53,7 @@ module.exports = {
     load: load,
 
     initDb: function (req, requiredModels) {
-        var i = 0,
+        let i = 0,
             db = req.db,
             initModels = [];
 
@@ -75,7 +76,7 @@ module.exports = {
     init: function (db, callback) {
 
         load().then(function () {
-            var i,
+            let i,
                 initModels = {};
 
             if (db) {

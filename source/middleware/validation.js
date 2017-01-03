@@ -1,5 +1,5 @@
 function filterParams(req, action) {
-    var paramsWhitelist = action.params,
+    let paramsWhitelist = action.params,
         whitelistParam,
         paramValue,
         type,
@@ -43,7 +43,7 @@ function filterParams(req, action) {
 
     return filteredParams;
 }
-var RequestError = require('../util/error').RequestError,
+const RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
 
     if (req.customData && req.customData.action) {

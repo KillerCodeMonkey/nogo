@@ -1,7 +1,7 @@
-var modelEndpointHandler = require('../util/modelEndpointHandler'),
+const modelEndpointHandler = require('../util/modelEndpointHandler'),
     RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
-        var version = req.params.version,
+        let version = req.params.version,
             className = req.params.classname,
             actionName = req.params.action,
             objectId = req.params.objectid,
@@ -13,7 +13,7 @@ var modelEndpointHandler = require('../util/modelEndpointHandler'),
                 return cb(null);
             }
             modelEndpointHandler.load().then(function () {
-                var models = modelEndpointHandler.initDb(req, [className]);
+                let models = modelEndpointHandler.initDb(req, [className]);
                 models[0].findById(objectId, function (err, object) {
                     if (err) {
                         return cb(err);
@@ -59,7 +59,7 @@ var modelEndpointHandler = require('../util/modelEndpointHandler'),
         modelEndpointHandler
             .load()
             .then(function (results) {
-                var models = results[0],
+                let models = results[0],
                     endpoints = results[1];
 
                 if (!version) {
@@ -85,7 +85,7 @@ var modelEndpointHandler = require('../util/modelEndpointHandler'),
                 }
 
                 //  load all actions
-                var actionList = endpoint[version][method];
+                let actionList = endpoint[version][method];
 
                 return getAction(actionList, function (actionErr, action) {
                     if (actionErr) {

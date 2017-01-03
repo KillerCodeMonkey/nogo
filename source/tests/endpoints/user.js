@@ -1,8 +1,8 @@
-var request = require('supertest'),
+const request = require('supertest'),
     expect = require('expect.js'),
     testHandler = require('../../util/testHandler'),
-    app = require('../../appServer'),
-    user,
+    app = require('../../appServer');
+let user,
     admin,
     testuser,
     restURL;
@@ -42,7 +42,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -68,7 +68,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -94,7 +94,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -115,7 +115,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -136,7 +136,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -158,7 +158,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -183,7 +183,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -209,7 +209,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -226,7 +226,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -249,7 +249,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -265,7 +265,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -281,7 +281,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -303,7 +303,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -323,7 +323,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -349,7 +349,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -371,7 +371,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -395,7 +395,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -428,7 +428,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -459,7 +459,7 @@ describe('user model', function () {
                     if (err) {
                         return done(err);
                     }
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -490,7 +490,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -515,7 +515,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -540,7 +540,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -565,7 +565,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -590,7 +590,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -615,7 +615,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -640,7 +640,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
 
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
@@ -666,7 +666,7 @@ describe('user model', function () {
                         return done(err);
                     }
 
-                    var data = res.body;
+                    const data = res.body;
                     expect(data).not.to.be(null);
                     expect(data).to.be.an('object');
                     expect(data.error).not.to.be(null);

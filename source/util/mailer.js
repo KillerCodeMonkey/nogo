@@ -1,5 +1,5 @@
 function buildMailer() {
-    var nodemailer = require('nodemailer'),
+    const nodemailer = require('nodemailer'),
         smtpTransport = require('nodemailer-smtp-transport'),
         smtpConfig = require('../config/smtp'),
         Promise = require('bluebird'),
@@ -7,8 +7,8 @@ function buildMailer() {
         emailTemplates = require('email-templates'),
         fs = require('fs-extra'),
         appConfig = require('../config/app'),
-        templateDir = path.resolve(process.cwd(), 'templates'),
-        config = {},
+        templateDir = path.resolve(process.cwd(), 'templates');
+    let config = {},
         transport;
 
     function getTranslations(templateDir, templateName, params, language) {
@@ -17,7 +17,7 @@ function buildMailer() {
                 if (err) {
                     return reject();
                 }
-                var fileContent = require(templateDir + '/' + templateName + '/translations');
+                let fileContent = require(templateDir + '/' + templateName + '/translations');
                 if (fileContent[language]) {
                     params.dict = fileContent[language];
                     return resolve();
@@ -57,8 +57,7 @@ function buildMailer() {
     };
 
     Mail.prototype.send = function (to, templateName, language, params, cb) {
-        var self = this,
-            tasks = [];
+        let tasks = [];
 
         if (!to) {
             return cb('missing_to');
@@ -71,10 +70,10 @@ function buildMailer() {
         }
         params = params || {};
 
-        tasks.push(getTranslations(self.templateDir, templateName, params, language));
+        tasks.push(getTranslations(this.templateDir, templateName, params, language));
 
-        Promise.all(tasks).then(function () {
-            emailTemplates(self.templateDir, function (err, template) {
+        Promise.all(tasks).then(() => {
+            emailTemplates(this.templateDir, (err, template) => {
                 if (err) {
                     return cb(err);
                 }
@@ -87,12 +86,12 @@ function buildMailer() {
                 }
 
                 // Send a single email
-                template(templateName, params, function (err, html, text) {
+                template(templateName, params, (err, html, text) => {
                     if (err) {
                         return cb(err);
                     }
-                    self.transport.sendMail({
-                        from: self.config.sender,
+                    this.transport.sendMail({
+                        from: this.config.sender,
                         to: to,
                         subject: params.dict.title,
                         html: html,

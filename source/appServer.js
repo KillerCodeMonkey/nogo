@@ -3,7 +3,7 @@
  *  @module Other
  * */
 function startAppServer() {
-    var path = require('path'),
+    const path = require('path'),
         express = require('express'),
         Promise = require('bluebird'),
         bodyParser = require('body-parser'),
@@ -21,8 +21,8 @@ function startAppServer() {
         files = require('./middleware/file'),
         error = require('./middleware/error'),
         authentication = require('./middleware/authentication'),
-        app = express(),
-        server,
+        app = express();
+    let server,
         // DB connection
         connection = mongoose.createConnection(databaseConfig.host, databaseConfig.dbname, databaseConfig.port);
     // use unified promises through the app.
@@ -92,7 +92,7 @@ function startAppServer() {
      */
     app.get('/api/config', function (req, res) {
         // deep clone appConfig object
-        var resAppConfig = JSON.parse(JSON.stringify(appConfig));
+        let resAppConfig = JSON.parse(JSON.stringify(appConfig));
 
         delete resAppConfig.secret;
         delete resAppConfig.permissions;

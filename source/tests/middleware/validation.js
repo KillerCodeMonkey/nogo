@@ -1,4 +1,4 @@
-var expect = require('expect.js'),
+const expect = require('expect.js'),
     proxyquire = require('proxyquire'),
     Promise = require('bluebird'),
     validationMiddleware = require('../../middleware/validation'),
@@ -53,7 +53,7 @@ describe('Validation middleware', function () {
         });
     });
     it('200 - no params in action', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: action1
             },
@@ -70,7 +70,7 @@ describe('Validation middleware', function () {
         });
     });
     it('200 - params in action', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: action2
             },
@@ -90,7 +90,7 @@ describe('Validation middleware', function () {
         });
     });
     it('400 - missing required param', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: action2
             },
@@ -110,7 +110,7 @@ describe('Validation middleware', function () {
         });
     });
     it('400 - type error', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: action2
             },
@@ -132,7 +132,7 @@ describe('Validation middleware', function () {
         });
     });
     it('400 - invalid structure --> regex failed', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: action2
             },
@@ -154,7 +154,7 @@ describe('Validation middleware', function () {
         });
     });
     it('400 - custom validation function failed', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: action2
             },
@@ -176,7 +176,7 @@ describe('Validation middleware', function () {
         });
     });
     it('400 - is empty but notEmpty is set', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: action2
             },

@@ -1,9 +1,9 @@
-var rest = {},
+let rest = {},
     fields = [
         'username',
         '_id'
-    ],
-    RequestError = require('../util/error').RequestError,
+    ];
+const RequestError = require('../util/error').RequestError,
     appConfig = require('../config/app'),
     Mailer = require('../util/mailer'),
     helper = require('../util/helper'),
@@ -56,7 +56,7 @@ function createPager(User, selector, pager, getAllFields) {
 
     return new Promise(function (resolve, reject) {
         helper.getPage(User, selector, populates, pager.limit, pager.skip, !getAllFields ? fields.join(' ') : undefined, pager.orderBy, pager.orderDesc).then(function (results) {
-            var rows = results[0],
+            let rows = results[0],
                 counter = results[1];
 
             pager.count = counter;
@@ -104,7 +104,7 @@ rest.get = {
     models: ['user'],
     pager: true,
     exec: function (req, res, User, next) {
-        var selector = {},
+        let selector = {},
             getAllFields = true;
         if (req.user) {
             selector._id = { // remove own user
@@ -200,7 +200,7 @@ rest.getOne = {
         if (req.object.permissions.indexOf(appConfig.permissions.admin) !== -1) {
             throw new RequestError(null, 303);
         }
-        var user = req.object.toObject(true);
+        let user = req.object.toObject(true);
 
         return res.send({
             username: user.username,
@@ -330,7 +330,7 @@ rest.check = {
     },
     models: ['user'],
     exec: function (req, res, User, next) {
-        var selector = {};
+        let selector = {};
         if (!req.params.email && !req.params.username) {
             throw new RequestError('missing_parameter', 400, 'email');
         }
@@ -423,7 +423,7 @@ rest.sendPassword = {
     },
     models: ['user'],
     exec: function (req, res, User, next) {
-        var password;
+        let password;
         if (req.user) {
             throw new RequestError('already_logged_in', 400);
         }
@@ -444,13 +444,13 @@ rest.sendPassword = {
                 return user.save();
             })
             .then(function (user) {
-                var object = user.toObject();
+                let object = user.toObject();
                 if (process.env.NODE_ENV !== 'production') {
                     object.password = password;
                 }
                 stripUser(object);
 
-                var Mail = new Mailer();
+                const Mail = new Mailer();
                 Mail.send(user.email, 'passwordRecovery', null, {
                     password: password,
                     user: user.username
@@ -558,7 +558,7 @@ rest.register = {
     },
     models: ['user'],
     exec: function (req, res, User, next) {
-        var params = req.params,
+        let params = req.params,
             user;
 
         if (req.user) {
@@ -586,8 +586,8 @@ rest.register = {
                 return user.save();
             })
             .then(function (newUser) {
-                var object = newUser.toObject(true),
-                    Mail = new Mailer();
+                let object = newUser.toObject(true);
+                const Mail = new Mailer();
 
                 if (process.env.NODE_ENV !== 'production') {
                     object.password = params.password;
@@ -725,7 +725,7 @@ rest.update = {
     permissions: [appConfig.permissions.user],
     models: ['user'],
     exec: function (req, res, User, next) {
-        var params = req.params,
+        let params = req.params,
             user = req.user,
             tasks = [];
 

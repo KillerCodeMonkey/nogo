@@ -1,13 +1,13 @@
-var multer = require('multer'),
+const multer = require('multer'),
     fs = require('fs-extra'),
     path = require('path'),
     RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
-        var actionFiles,
+        let actionFiles,
             createStorage = function (actionFiles) {
                 return multer.diskStorage({
                     destination: function (req, file, cb) {
-                        var dest = actionFiles.destination;
+                        let dest = actionFiles.destination;
                         // object request --> object filename exclusion --> create id folder
                         if (req.customData.object && actionFiles.noObject) {
                             dest = path.resolve(dest, req.customData.object._id.toString());
@@ -21,7 +21,7 @@ var multer = require('multer'),
                         });
                     },
                     filename: function (req, file, cb) {
-                        var ext = actionFiles.noExt ? '' : '.' + file.originalname.split('.').pop(),
+                        let ext = actionFiles.noExt ? '' : '.' + file.originalname.split('.').pop(),
                             fileName;
 
                         // global name
@@ -49,10 +49,10 @@ var multer = require('multer'),
                 });
             },
             upload = function (actionFiles) {
-                var multerConfig = {
+                let multerConfig = {
                         storage: createStorage(actionFiles),
                         fileFilter: function (req, file, cb) {
-                            var i = 0,
+                            let i = 0,
                             fieldTypes;
                             // if there are any restricted types for upload --> check if mimetype matches type
                             if (actionFiles.types && Array.isArray(actionFiles.types) && actionFiles.types.length) {

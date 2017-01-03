@@ -1,4 +1,4 @@
-var RequestError = require('../util/error').RequestError,
+const RequestError = require('../util/error').RequestError,
     middleware = function (req, res, next) {
 
     function checkPermissions() {
@@ -6,7 +6,7 @@ var RequestError = require('../util/error').RequestError,
             return true;
         }
 
-        var correct = false,
+        let correct = false,
             i = 0,
             action = req.customData.action,
             reqUser = req.customData.user;

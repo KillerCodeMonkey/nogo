@@ -11,7 +11,7 @@ test_runner:
         - ./source:/usr/src/app
         - /data/nogo/public/:/usr/src/app/static/public
 test_database:
-    image: "mongo:3.2.3"
+    image: "mongo:3.4.1"
     container_name: nogo_test_db
     expose:
         - "27017"

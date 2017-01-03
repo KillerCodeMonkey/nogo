@@ -1,4 +1,4 @@
-var path = require('path'),
+const path = require('path'),
     Promise = require('bluebird'),
     _ = require('underscore');
 
@@ -26,7 +26,7 @@ module.exports = {
         },
         array: function (val, empty, selector, key) {
             if (empty) {
-                var temp = {},
+                let temp = {},
                     temp2 = {};
                 if (!selector.$or) {
                     selector.$or = [];
@@ -91,7 +91,7 @@ module.exports = {
             };
         },
         exists: function (selector, key) {
-            var temp = {},
+            let temp = {},
                 temp2 = {};
 
             if (!selector.$or) {
@@ -115,7 +115,7 @@ module.exports = {
     },
     regExpEscape: regExpEscape,
     getPage: function (Model, selector, populates, limiting, skipping, selecting, sorting, sortDesc, slices, projections) {
-        var options = [],
+        let options = [],
             finalPopulates = [],
             project = {};
 
@@ -140,7 +140,7 @@ module.exports = {
             });
         }
         if (selecting) {
-            var fields = selecting.split(' ');
+            let fields = selecting.split(' ');
 
             _.each(fields, function (field) {
                 project[field] = 1;
@@ -154,7 +154,7 @@ module.exports = {
             });
         }
         if (sorting) {
-            var sort = {
+            let sort = {
                 $sort: {}
             };
             if (typeof sorting === 'object') {

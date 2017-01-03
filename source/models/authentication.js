@@ -1,7 +1,7 @@
-var mongoose = require('mongoose'),
-    Schema = mongoose.Schema,
-    // AccessToken
-    Authentication = new Schema({
+const mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
+    // Authentication
+let Authentication = new Schema({
         user: {
             type: Schema.Types.ObjectId,
             ref: 'User',

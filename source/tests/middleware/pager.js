@@ -1,4 +1,4 @@
-var expect = require('expect.js'),
+const expect = require('expect.js'),
     proxyquire = require('proxyquire'),
     Promise = require('bluebird'),
     pagerMiddleware = require('../../middleware/pager');

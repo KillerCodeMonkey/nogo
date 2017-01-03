@@ -1,4 +1,4 @@
-var request = require('supertest'),
+const request = require('supertest'),
     expect = require('expect.js'),
     errorMiddleware = require('../../middleware/error'),
     resMock = {
@@ -17,7 +17,7 @@ describe('Error Middleware', function () {
     'use strict';
 
     it('defined status', function (done) {
-        var result = errorMiddleware({
+        const result = errorMiddleware({
             status: 404,
             name: 'lenz',
             message: 'hui',
@@ -32,7 +32,7 @@ describe('Error Middleware', function () {
         done();
     });
     it('not defined status', function (done) {
-        var result = errorMiddleware({
+        const result = errorMiddleware({
             name: 'lenz',
             message: 'hui',
             param: 'name'

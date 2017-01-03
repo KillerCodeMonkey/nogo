@@ -1,9 +1,10 @@
-var url,
+let url,
     app,
     user,
     admin,
-    connection,
-    meHandler = require('./modelEndpointHandler'),
+    connection;
+
+const meHandler = require('./modelEndpointHandler'),
     request = require('supertest'),
     dbConfig = require('../config/database'),
     Promise = require('bluebird'),
@@ -63,7 +64,7 @@ module.exports = {
             };
 
             // DB connection
-            var adminconnection = mongoose.createConnection(dbConfig.host, dbConfig.dbname, dbConfig.port);
+            const adminconnection = mongoose.createConnection(dbConfig.host, dbConfig.dbname, dbConfig.port);
             adminconnection.on('open', function () {
                 adminconnection.db.dropDatabase(function () {
                     adminconnection.close();
@@ -78,7 +79,7 @@ module.exports = {
                             if (!initModels) {
                                 return reject();
                             }
-                            var newAdmin = new initModels.User({
+                            const newAdmin = new initModels.User({
                                 email: 'admin@test.test',
                                 permissions: ['user', 'admin'],
                                 password: '123456abc'

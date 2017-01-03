@@ -1,4 +1,4 @@
-var expect = require('expect.js'),
+const expect = require('expect.js'),
     stream = require('stream'),
     fs = require('fs-extra'),
     path = require('path'),
@@ -8,7 +8,7 @@ var expect = require('expect.js'),
     IMG = path.resolve(process.cwd(), 'util', 'flyacts.png');
 
 function formRequest (req, multi, both, cb) {
-    var form = new FormData();
+    let form = new FormData();
     if (!multi || both) {
         form.append('single', fs.createReadStream(IMG));
     }
@@ -47,7 +47,7 @@ describe('File middleware', function () {
     });
 
     it('200 - no custom request data --> push trough', function (done) {
-        var req = {};
+        let req = {};
         return filesMiddleware(req, {}, function (err) {
             if (err) {
                 return done(err);
@@ -56,7 +56,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - no custom action in request data --> push trough', function (done) {
-        var req = {
+        let req = {
             customData: {}
         };
         return filesMiddleware(req, {}, function (err) {
@@ -67,7 +67,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - no action files in request data --> push trough', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: {}
             }
@@ -80,7 +80,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - action files no array --> push trough', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: {
                     files: true
@@ -95,7 +95,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - action files no array length --> push trough', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: {
                     files: []
@@ -110,7 +110,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - action files but no valid file configuration --> push trough', function (done) {
-        var req = {
+        let req = {
             customData: {
                 action: {
                     files: [{
@@ -127,7 +127,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - action file but nothing in upload --> push trough', function (done) {
-        var req = new stream.PassThrough(),
+        let req = new stream.PassThrough(),
             form = new FormData();
         req.customData = {
             action: {
@@ -161,7 +161,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - action files but nothing in upload --> push trough', function (done) {
-        var req = new stream.PassThrough(),
+        let req = new stream.PassThrough(),
             form = new FormData();
         req.customData = {
             action: {
@@ -196,7 +196,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - real upload --> generate filename', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -225,7 +225,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - real upload --> type restricted, no ext --> set filename', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -258,7 +258,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - real upload failed wrong type', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -284,7 +284,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - upload file not matching', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -308,7 +308,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - upload with object id instead of action name', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -341,7 +341,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - upload multiple', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -371,7 +371,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - differend fields', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -406,7 +406,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - differend fields wit types', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -444,7 +444,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - differend fields with non matching types', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
@@ -485,7 +485,7 @@ describe('File middleware', function () {
         });
     });
     it('200 - no fields and field', function (done) {
-        var req = new stream.PassThrough();
+        let req = new stream.PassThrough();
         req.customData = {
             action: {
                 files: {
