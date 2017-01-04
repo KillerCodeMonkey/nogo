@@ -5,3 +5,7 @@ apiDoc
 apidoc
 coverage
 npm-debug.log
+.cache
+.vagrant
+.bash_history
+.cloud-locale-test.skip
